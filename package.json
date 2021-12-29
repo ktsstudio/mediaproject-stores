@@ -62,5 +62,11 @@
   "homepage": "https://github.com/ktsstudio/mediaproject-stores#readme",
   "dependencies": {
     "react": "~17.0.0"
-  }
+  },
+  "files": [
+    "dist/",
+    "package.json",
+    "README.md",
+    "CHANGELOG.md"
+  ]
 }
