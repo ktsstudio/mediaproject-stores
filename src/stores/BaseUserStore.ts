@@ -88,18 +88,18 @@ export default class BaseUserStore<
     return { response };
   };
 
-  flag = async (type: string, value: boolean): Promise<boolean> => {
+  flag = async (name: string, value: boolean | number): Promise<boolean> => {
     if (this.sendingFlag || !this.rootStore._urls.flag) {
       return false;
     } 
 
     this.setSendingFlag(true);
 
-    const { response, error, errorData } = await api(...this.rootStore._urls.flag, { type, value });
+    const { response, error, errorData } = await api(...this.rootStore._urls.flag, { name, value });
 
     if (!response) {
       const [url] = this.rootStore._urls.flag;
-      this.sendSentryError(error, { errorData, url, type, value });
+      this.sendSentryError(error, { errorData, url, name, value });
       this.setSendingFlag(false);
       return false;
     }
