@@ -32,7 +32,7 @@ export default class BaseSubstore<RootStoreT = BaseRootStore> {
 
   sendSentryError = (exception: any, params: Record<string, unknown>): void => {
     this.setError(true);
-    
+
     try {
       Sentry.captureException(exception, params);
     } catch (error) {

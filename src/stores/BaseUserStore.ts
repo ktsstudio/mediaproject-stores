@@ -30,7 +30,7 @@ export default class BaseUserStore<
       auth: action,
       get: action,
       flag: action,
-    })
+    });
   }
 
   setUser = (value: null | UserT) => {
@@ -53,11 +53,14 @@ export default class BaseUserStore<
     this.setLoading(true);
 
     const [url, method] = this.rootStore._urls.auth;
-    
-    const { response, error, errorData }: ApiResponse<AuthT> = await api(`${url}${window.search}`, method);
+
+    const { response, error, errorData }: ApiResponse<AuthT> = await api(
+      `${url}${window.search}`,
+      method
+    );
 
     if (!response) {
-      this.sendSentryError(error, { errorData, url })
+      this.sendSentryError(error, { errorData, url });
       this.setLoading(false);
       return { response: null };
     }
@@ -70,12 +73,14 @@ export default class BaseUserStore<
 
   get = async (): Promise<{ response: UserT | null }> => {
     if (this.gettingUser || !this.rootStore._urls.getUser) {
-      return { response: null }
+      return { response: null };
     }
 
     this.setGettingUser(true);
 
-    const { response, error, errorData }: ApiResponse<UserT> = await api(...this.rootStore._urls.getUser);
+    const { response, error, errorData }: ApiResponse<UserT> = await api(
+      ...this.rootStore._urls.getUser
+    );
 
     if (!response) {
       this.sendSentryError(error, {
@@ -94,11 +99,14 @@ export default class BaseUserStore<
   flag = async (name: string, value: boolean | number): Promise<boolean> => {
     if (this.sendingFlag || !this.rootStore._urls.flag) {
       return false;
-    } 
+    }
 
     this.setSendingFlag(true);
 
-    const { response, error, errorData } = await api(...this.rootStore._urls.flag, { name, value });
+    const { response, error, errorData } = await api(
+      ...this.rootStore._urls.flag,
+      { name, value }
+    );
 
     if (!response) {
       this.sendSentryError(error, {
