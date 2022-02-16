@@ -23,7 +23,7 @@ export default class BaseUserStore<
       sendingFlag: observable,
       gettingUser: observable,
 
-      setUserData: action,
+      setUser: action,
       setSendingFlag: action,
       setGettingUser: action,
 
@@ -33,7 +33,7 @@ export default class BaseUserStore<
     })
   }
 
-  setUserData = (value: null | UserT) => {
+  setUser = (value: null | UserT) => {
     this.user = value;
   };
 
@@ -53,8 +53,8 @@ export default class BaseUserStore<
     this.setLoading(true);
 
     const [url, method] = this.rootStore._urls.auth;
-    // @ts-ignore
-    const { response, error, errorData }: ApiResponse<AuthT> = await api(`${url}${window.search!}`, method);
+    
+    const { response, error, errorData }: ApiResponse<AuthT> = await api(`${url}${window.search}`, method);
 
     if (!response) {
       this.sendSentryError(error, { errorData, url })
@@ -62,7 +62,7 @@ export default class BaseUserStore<
       return { response: null };
     }
 
-    this.setUserData(response.user as UserT); // почему-то ругается
+    this.setUser(response.user as UserT); // почему-то ругается
 
     this.setLoading(false);
     return { response };
@@ -78,8 +78,11 @@ export default class BaseUserStore<
     const { response, error, errorData }: ApiResponse<UserT> = await api(...this.rootStore._urls.getUser);
 
     if (!response) {
-      const [url] = this.rootStore._urls.getUser;
-      this.sendSentryError(error, { errorData, url });
+      this.sendSentryError(error, {
+        url: this.rootStore._urls.getUser,
+        errorData,
+      });
+
       this.setGettingUser(false);
       return { response: null };
     }
@@ -98,8 +101,13 @@ export default class BaseUserStore<
     const { response, error, errorData } = await api(...this.rootStore._urls.flag, { name, value });
 
     if (!response) {
-      const [url] = this.rootStore._urls.flag;
-      this.sendSentryError(error, { errorData, url, name, value });
+      this.sendSentryError(error, {
+        url: this.rootStore._urls.flag,
+        errorData,
+        name,
+        value,
+      });
+
       this.setSendingFlag(false);
       return false;
     }

@@ -18,6 +18,7 @@ export default class BaseSubstore<RootStoreT = BaseRootStore> {
 
       setLoading: action,
       setError: action,
+      sendSentryError: action,
     });
   }
 
