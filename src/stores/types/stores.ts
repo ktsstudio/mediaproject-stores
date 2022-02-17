@@ -1,10 +1,12 @@
 import { Method } from 'axios';
 
-// urls
-export type UrlTuple = [string, Method];
+export type EndpointType = {
+  url: string;
+  method: Method;
+}
 
-export type UrlsType = Record<string, UrlTuple> & {
-  auth: UrlTuple;
-  getUser?: UrlTuple;
-  flag?: UrlTuple;
+export type EndpointsType = Record<string, EndpointType> & {
+  auth: EndpointType;
+  getUser?: EndpointType;
+  flag?: EndpointType;
 };

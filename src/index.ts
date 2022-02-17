@@ -6,8 +6,9 @@ import {
   ApiBaseUserType,
   ApiSexType,
 } from './stores/types/api';
-import { UrlsType, UrlTuple } from './stores/types/stores';
+import { EndpointsType, EndpointType } from './stores/types/stores';
 import { WindowType } from './types/window';
+import { addParamsToEndpointUrl } from './utils';
 
 export {
   BaseRootStore,
@@ -16,7 +17,8 @@ export {
   ApiBaseAuthType,
   ApiBaseUserType,
   ApiSexType,
-  UrlsType,
-  UrlTuple,
+  EndpointsType,
+  EndpointType,
   WindowType,
+  addParamsToEndpointUrl,
 };

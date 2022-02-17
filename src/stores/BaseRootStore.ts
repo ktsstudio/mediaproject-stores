@@ -1,9 +1,9 @@
-import { UrlsType } from './types/stores';
+import { EndpointsType } from './types/stores';
 
 export default class BaseRootStore {
-  _urls: UrlsType;
+  _endpoints: EndpointsType;
 
-  constructor(urls: UrlsType) {
-    this._urls = urls;
+  constructor(endpoints: EndpointsType) {
+    this._endpoints = endpoints;
   }
 }
