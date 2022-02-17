@@ -1,7 +1,7 @@
 import { makeObservable, observable, action } from 'mobx';
 import { api, ApiResponse } from '@ktsstudio/mediaproject-utils';
 
-import { addParamsToEndpointUrl } from '../utils';
+import { addParamsToEndpointUrl, sendSentryError } from '../utils';
 
 import BaseRootStore from './BaseRootStore';
 import BaseSubstore from './BaseSubstore';
@@ -91,7 +91,7 @@ export default class BaseUserStore<
     );
 
     if (!response) {
-      this.sendSentryError(error, {
+      sendSentryError(error, {
         url: this.rootStore._endpoints.auth,
         errorData,
       });
@@ -120,7 +120,7 @@ export default class BaseUserStore<
     );
 
     if (!response) {
-      this.sendSentryError(error, {
+      sendSentryError(error, {
         url: this.rootStore._endpoints.getUser,
         errorData,
       });
@@ -146,7 +146,7 @@ export default class BaseUserStore<
     );
 
     if (!response || error) {
-      this.sendSentryError(error, {
+      sendSentryError(error, {
         url: this.rootStore._endpoints.flag,
         errorData,
         name,

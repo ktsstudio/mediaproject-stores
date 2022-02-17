@@ -8,7 +8,7 @@ import {
 } from './stores/types/api';
 import { EndpointsType, EndpointType } from './stores/types/stores';
 import { WindowType } from './types/window';
-import { addParamsToEndpointUrl } from './utils';
+import { addParamsToEndpointUrl, sendSentryError } from './utils';
 
 export {
   BaseRootStore,
@@ -20,5 +20,6 @@ export {
   EndpointsType,
   EndpointType,
   WindowType,
+  sendSentryError,
   addParamsToEndpointUrl,
 };

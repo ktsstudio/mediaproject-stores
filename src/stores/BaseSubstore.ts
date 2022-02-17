@@ -1,7 +1,6 @@
 import { makeObservable, observable, action, computed } from 'mobx';
 
 import BaseRootStore from './BaseRootStore';
-import { sendSentryError } from '../utils';
 
 export default class BaseSubstore<RootStoreT = BaseRootStore> {
   rootStore: RootStoreT;
@@ -18,7 +17,6 @@ export default class BaseSubstore<RootStoreT = BaseRootStore> {
 
       setLoading: action,
       setError: action,
-      sendSentryError: action,
     });
   }
 
@@ -28,10 +26,5 @@ export default class BaseSubstore<RootStoreT = BaseRootStore> {
 
   setError = (value: boolean): void => {
     this.error = value;
-  };
-
-  // eslint-disable-next-line
-  sendSentryError = (exception: any, params: Record<string, unknown>): void => {
-    sendSentryError(exception, params);
   };
 }
