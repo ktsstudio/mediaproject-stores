@@ -10,10 +10,10 @@ export type ApiBaseUserType = Record<string, unknown> & {
   bdate?: string | null;
   country_id?: number | null;
   city_id?: number | null;
-  added_from?: string | null;
   flags?: ApiFlagsType;
 };
 
-export type ApiBaseAuthType = Record<string, unknown> & {
-  user: ApiBaseUserType;
+export type ApiBaseAuthType<UserT = ApiBaseUserType> = Record<string, unknown> & {
+  user: UserT;
+  messages_allowed?: boolean | null;
 };

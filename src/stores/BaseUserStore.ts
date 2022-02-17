@@ -1,18 +1,21 @@
 import { makeObservable, observable, action } from 'mobx';
 import { api, ApiResponse } from '@ktsstudio/mediaproject-utils';
 
+import { addParamsToEndpointUrl } from '../utils';
+
 import BaseRootStore from './BaseRootStore';
 import BaseSubstore from './BaseSubstore';
 import { ApiBaseUserType, ApiBaseAuthType, ApiFlagsType } from './types/api';
-import { addParamsToEndpointUrl } from '../utils';
 
 export default class BaseUserStore<
   RootStoreT extends BaseRootStore = BaseRootStore,
   UserT extends ApiBaseUserType = ApiBaseUserType,
-  AuthT extends ApiBaseAuthType = ApiBaseAuthType
+  AuthT extends ApiBaseAuthType = ApiBaseAuthType<UserT>
 > extends BaseSubstore<RootStoreT> {
+
   user: null | UserT = null;
-  flags: Record<string, boolean> | null = null;
+  flags: Record<string, boolean> = {};
+  messagesAllowed = false;
 
   sendingFlag = false;
   gettingUser = false;
@@ -23,11 +26,15 @@ export default class BaseUserStore<
     makeObservable(this, {
       user: observable,
       flags: observable,
+      messagesAllowed: observable,
       sendingFlag: observable,
       gettingUser: observable,
 
+      setData: action,
       setUser: action,
+      setFlag: action,
       setFlags: action,
+      setMessagesAllowed: action,
       setSendingFlag: action,
       setGettingUser: action,
 
@@ -37,22 +44,32 @@ export default class BaseUserStore<
     });
   }
 
-  setUser = (value: null | UserT) => {
+  setData = (value: AuthT): void => {
+    this.setUser(value.user as UserT);
+
+    if (value.user.flags) {
+      this.setFlags(value.user.flags);
+    }
+
+    if (value.messages_allowed) {
+      this.setMessagesAllowed(true);
+    }    
+  };
+
+  setUser = (value: null | UserT): void => {
     this.user = value;
   };
 
   setFlag = (name: string, value: boolean): void => {
-    if (this.flags) {
-      this.flags[name] = value;
-    } else {
-      this.flags = {
-        name: value,
-      };
-    }
+    this.flags[name] = value;
   };
 
-  setFlags = (value: ApiFlagsType | null): void => {
+  setFlags = (value: ApiFlagsType): void => {
     this.flags = value;
+  };
+
+  setMessagesAllowed = (value: boolean): void => {
+    this.messagesAllowed = value;
   };
 
   setSendingFlag = (value: boolean): void => {
@@ -80,11 +97,13 @@ export default class BaseUserStore<
         errorData,
       });
 
+      this.rootStore.setFatalError(true);
+      
       this.setLoading(false);
       return { response: null };
     }
 
-    this.setUser(response.user as UserT); // почему-то ругается
+    this.setData(response);
 
     this.setLoading(false);
     return { response };
