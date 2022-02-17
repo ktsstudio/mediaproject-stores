@@ -8,16 +8,17 @@ export default function addParamsToEndpointUrl(
     return {
       method,
       url: `${url}${params}`,
-    }
+    };
   }
 
-  const paramsAsString = Object
-    .entries(params)
-    .map(([key, value]) => [encodeURIComponent(key), encodeURIComponent(value)].join('='))
+  const paramsAsString = Object.entries(params)
+    .map(([key, value]) =>
+      [encodeURIComponent(key), encodeURIComponent(value)].join('=')
+    )
     .join('&');
 
   return {
     method,
-    url: `${url}?${paramsAsString}`
-  }
+    url: `${url}?${paramsAsString}`,
+  };
 }

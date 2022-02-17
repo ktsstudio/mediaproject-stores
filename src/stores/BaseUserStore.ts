@@ -41,7 +41,7 @@ export default class BaseUserStore<
     this.user = value;
   };
 
-  setFlag = (name: string, value: boolean): void =>  {
+  setFlag = (name: string, value: boolean): void => {
     if (this.flags) {
       this.flags[name] = value;
     } else {

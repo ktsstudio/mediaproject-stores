@@ -1,3 +1,3 @@
-import addParamsToEndpointUrl from "./addParamsToEndpointUrl";
+import addParamsToEndpointUrl from './addParamsToEndpointUrl';
 
 export { addParamsToEndpointUrl };
