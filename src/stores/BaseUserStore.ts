@@ -13,7 +13,7 @@ export default class BaseUserStore<
   AuthT extends ApiBaseAuthType = ApiBaseAuthType<UserT>
 > extends BaseSubstore<RootStoreT> {
   user: null | UserT = null;
-  flags: Record<string, boolean> = {};
+  flags: ApiFlagsType = {};
   messagesAllowed = false;
 
   sendingFlag = false;
