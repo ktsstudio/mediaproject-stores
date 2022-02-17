@@ -4,12 +4,12 @@ export type ApiFlagsType = Record<string, boolean>;
 
 export type ApiBaseUserType = Record<string, unknown> & {
   id: number;
-  first_name?: string | null;
-  last_name?: string | null;
-  sex?: ApiSexType | null;
-  bdate?: string | null;
-  country_id?: number | null;
-  city_id?: number | null;
+  first_name?: string;
+  last_name?: string;
+  sex?: ApiSexType;
+  bdate?: string;
+  country_id?: number;
+  city_id?: number;
   flags?: ApiFlagsType;
 };
 
@@ -18,5 +18,5 @@ export type ApiBaseAuthType<UserT = ApiBaseUserType> = Record<
   unknown
 > & {
   user: UserT;
-  messages_allowed?: boolean | null;
+  messages_allowed?: boolean;
 };

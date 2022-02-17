@@ -1,7 +1,7 @@
 import { makeObservable, observable, action } from 'mobx';
 import { api, ApiResponse } from '@ktsstudio/mediaproject-utils';
 
-import { addParamsToEndpointUrl, sendSentryError } from '../utils';
+import { addParamsToEndpointUrl, sendSentryError, logError } from '../utils';
 
 import BaseRootStore from './BaseRootStore';
 import BaseSubstore from './BaseSubstore';
@@ -26,6 +26,7 @@ export default class BaseUserStore<
       user: observable,
       flags: observable,
       messagesAllowed: observable,
+
       sendingFlag: observable,
       gettingUser: observable,
 
@@ -80,7 +81,8 @@ export default class BaseUserStore<
   };
 
   auth = async (): Promise<{ response: AuthT | null }> => {
-    if (this.loading) {
+    if (this.loading || !this.rootStore._endpoints.auth) {
+      logError('Missing endpoint for auth method in BaseUserStore');
       return { response: null };
     }
 
@@ -109,7 +111,12 @@ export default class BaseUserStore<
   };
 
   get = async (): Promise<{ response: UserT | null }> => {
-    if (this.gettingUser || !this.rootStore._endpoints.getUser) {
+    if (!this.rootStore._endpoints.getUser) {
+      logError('Missing endpoint for get user method in BaseUserStore');
+      return { response: null };
+    }
+    
+    if (this.gettingUser) {
       return { response: null };
     }
 
@@ -134,7 +141,12 @@ export default class BaseUserStore<
   };
 
   flag = async (name: string, value: boolean): Promise<boolean> => {
-    if (this.sendingFlag || !this.rootStore._endpoints.flag) {
+    if (!this.rootStore._endpoints.flag) {
+      logError('Missing endpoint for send user flag method in BaseUserStore');
+      return false;
+    }
+
+    if (this.sendingFlag) {
       return false;
     }
 
@@ -149,8 +161,10 @@ export default class BaseUserStore<
       sendSentryError(error, {
         url: this.rootStore._endpoints.flag,
         errorData,
-        name,
-        value,
+        payload: {
+          name,
+          value,
+        },
       });
 
       this.setSendingFlag(false);

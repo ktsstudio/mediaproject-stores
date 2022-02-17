@@ -35,14 +35,50 @@ export default class RootStore extends BaseRootStore {
 
 ### BaseSubstore
 
-Example of usage.
+If you extend [this store](./src/stores/BaseSubstore.ts) when creating your substore you'll be able to use predefined properties `loading` and `error` (also their setters) and have acces to `RootStore` if you pass it to parent's constructor. Example of usage is below.
 
 ```typescript
-// TODO: example
+import { BaseSubstore } from '@ktsstudio/mediaproject-stores';
+import { makeAutoObservable } from 'mobx';
+
+import RootStore, { endpoints } from './RootStore';
+
+export default class MySubstore extends BaseSubstore<RootStore> {
+  data: DataType | null = null;
+
+  constructor(rootStore: RootStore) {
+    super(rootStore);
+
+    makeAutoObservable(this, {
+      rootStore: false,
+    });
+  }
+
+  setData = (value: DataType | null): void => {
+    this.data = value;
+  };
+
+  getData = async (): Promise<void> => {
+    if (this.loading) {
+      return;
+    }
+
+    this.setLoading(true);
+
+    try {
+      const response = await fetch(endpoints.data.url);
+      this.setData(await response.json());
+    } catch {
+      this.setError(true);
+    } finally {
+      this.setLoading(false);
+    }
+  };
+}
 ```
 
-If you extend `BaseSubstore` when creating your substore you'll be able to use its observables and actions listed below.
-TODO: finish
+### BaseUserStore
+TODO
 
 
 

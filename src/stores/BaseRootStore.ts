@@ -4,6 +4,7 @@ import { EndpointsType } from './types/stores';
 
 export default class BaseRootStore {
   _endpoints: EndpointsType;
+  
   fatalError = false;
 
   constructor(endpoints: EndpointsType) {

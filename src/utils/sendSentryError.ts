@@ -6,11 +6,11 @@ const shouldSendSentryError = (): boolean =>
 export default function sendSentryError(
   // eslint-disable-next-line
   exception: any,
-  params: Record<string, unknown>
+  extra: Record<string, unknown>
 ): void {
   if (shouldSendSentryError()) {
     try {
-      Sentry.captureException(exception, params);
+      Sentry.captureException(exception, extra);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error);
