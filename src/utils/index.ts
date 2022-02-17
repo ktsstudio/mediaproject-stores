@@ -1,3 +1,4 @@
 import addParamsToEndpointUrl from './addParamsToEndpointUrl';
+import sendSentryError from './sendSentryError';
 
-export { addParamsToEndpointUrl };
+export { addParamsToEndpointUrl, sendSentryError };

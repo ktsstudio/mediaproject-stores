@@ -1,7 +1,7 @@
 import { makeObservable, observable, action, computed } from 'mobx';
-import * as Sentry from '@sentry/react';
 
 import BaseRootStore from './BaseRootStore';
+import { sendSentryError } from '../utils';
 
 export default class BaseSubstore<RootStoreT = BaseRootStore> {
   rootStore: RootStoreT;
@@ -16,16 +16,10 @@ export default class BaseSubstore<RootStoreT = BaseRootStore> {
       loading: observable,
       error: observable,
 
-      shouldSendSentryError: computed,
-
       setLoading: action,
       setError: action,
       sendSentryError: action,
     });
-  }
-
-  get shouldSendSentryError(): boolean {
-    return Boolean(!window.is_dev && Sentry.getCurrentHub().getClient());
   }
 
   setLoading = (value: boolean): void => {
@@ -38,13 +32,6 @@ export default class BaseSubstore<RootStoreT = BaseRootStore> {
 
   // eslint-disable-next-line
   sendSentryError = (exception: any, params: Record<string, unknown>): void => {
-    if (this.shouldSendSentryError) {
-      try {
-        Sentry.captureException(exception, params);
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error(error);
-      }
-    }
+    sendSentryError(exception, params);
   };
 }
