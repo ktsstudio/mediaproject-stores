@@ -16,6 +16,6 @@ export default class BaseRootStore {
   }
 
   setFatalError = (value: boolean): void => {
-    this.setFatalError(value);
+    this.fatalError = value;
   };
 }
