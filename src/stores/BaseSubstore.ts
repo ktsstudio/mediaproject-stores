@@ -36,7 +36,7 @@ export default class BaseSubstore<RootStoreT = BaseRootStore> {
     this.error = value;
   };
 
-  // eslint-disable-next-line explicit-module-boundary-types no-explicit-any
+  // eslint-disable-next-line
   sendSentryError = (exception: any, params: Record<string, unknown>): void => {
     if (this.shouldSendSentryError) {
       try {

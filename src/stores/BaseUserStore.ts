@@ -12,7 +12,6 @@ export default class BaseUserStore<
   UserT extends ApiBaseUserType = ApiBaseUserType,
   AuthT extends ApiBaseAuthType = ApiBaseAuthType<UserT>
 > extends BaseSubstore<RootStoreT> {
-
   user: null | UserT = null;
   flags: Record<string, boolean> = {};
   messagesAllowed = false;
@@ -53,7 +52,7 @@ export default class BaseUserStore<
 
     if (value.messages_allowed) {
       this.setMessagesAllowed(true);
-    }    
+    }
   };
 
   setUser = (value: null | UserT): void => {
@@ -98,7 +97,7 @@ export default class BaseUserStore<
       });
 
       this.rootStore.setFatalError(true);
-      
+
       this.setLoading(false);
       return { response: null };
     }

@@ -13,7 +13,10 @@ export type ApiBaseUserType = Record<string, unknown> & {
   flags?: ApiFlagsType;
 };
 
-export type ApiBaseAuthType<UserT = ApiBaseUserType> = Record<string, unknown> & {
+export type ApiBaseAuthType<UserT = ApiBaseUserType> = Record<
+  string,
+  unknown
+> & {
   user: UserT;
   messages_allowed?: boolean | null;
 };
