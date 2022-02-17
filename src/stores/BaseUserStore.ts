@@ -115,7 +115,7 @@ export default class BaseUserStore<
       logError('Missing endpoint for get user method in BaseUserStore');
       return { response: null };
     }
-    
+
     if (this.gettingUser) {
       return { response: null };
     }
