@@ -78,8 +78,71 @@ export default class MySubstore extends BaseSubstore<RootStore> {
 ```
 
 ### BaseUserStore
-TODO
 
+You can extend your `UserStore` with [this store](./src/stores/BaseUserStore.ts) or use it as it is. Example of usage is below.
 
+```typescript
+// store/RootStore.ts
+
+// <...>
+import { BaseUserStore } from '@ktsstudio/mediaproject-stores';
+
+export default class RootStore extends BaseRootStore {
+  // <...>
+  userStore = new BaseUserStore(this);
+}
+```
+
+```typescript
+// store/hooks.ts
+
+import { BaseUserStore } from '@ktsstudio/mediaproject-stores';
+import { MobXProviderContext } from 'mobx-react';
+import { useContext } from 'react';
+
+export function useUserStore(): BaseUserStore {
+  return useContext(MobXProviderContext).rootStore.userStore;
+}
+```
+
+And then in component:
+
+```typescript
+// MyComponents.ts
+
+import * as React from 'react';
+import { useUserStore } from 'store/hooks';
+import { observer } from 'mobx';
+
+const MyComponent = () => {
+  const { auth } = useUserStore();
+
+  React.useEffect(() => {
+    auth();
+  }, []);
+
+  return <div>hello world</div>
+};
+
+export default MyComponent;
+```
+
+And that's it!
+
+List of `BaseUserStore` observables:
+
+| **Observable**  | **Type**                | **Default** | **Description**                                           |
+|-----------------|-------------------------|-------------|-----------------------------------------------------------|
+| user            | ApiBaseUserType \| null | null        | object with user info                                     |
+| flags           | ApiFlagsType            | {}          | user flags (also can find them in user)                   |
+| messagesAllowed | boolean                 | false       | did user gave permission to send him messages from group  |
+
+List of `BaseUserStore` actions: 
+
+| **Action** | **Params**                    | **Returns**                                    | **Description**             |
+|------------|-------------------------------|------------------------------------------------|-----------------------------|
+| auth       | none                          | Promise<{ response: ApiBaseAuthType \| null }> | action to process user auth |
+| flag       | name: string,  value: boolean | Promise<boolean>                               | action to send user flag    |
+| get        | none                          | Promise<{ response: ApiBaseUserType \| null }> | action to update user info  |
 
 
