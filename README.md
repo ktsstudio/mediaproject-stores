@@ -2,46 +2,50 @@
 
 # @ktsstudio/mediaproject-stores
 
-Package with basic MobX stores for media projects.
+Пакет с базовыми MobX-сторами для медиапроектов.
 
-## Usage
+## Использование
 
 `npm install @ktsstudio/mediaproject-stores`
 
 `yarn add @ktsstudio/mediaproject-stores`
 
-## Stores
+## Сторы
 
 ### BaseRootStore
 
-[This store](./src/stores/BaseRootStore.ts) should be extended when you create your RootStore. To its constructor should be passed object of type `EndpointsType` with required `auth` field, so in the future you can use `BaseUserStore` methods. Example of usage is below.
+От [этого стора](./src/stores/BaseRootStore.ts) должен быть отнаследован RootStore вашего приложения. В конструкторе нужно передать в параметрах объект эндпоинтов API (тип `EndpointsType` с обязательным эндпоинтом для авторизации в поле `auth`). Это необходимо для того, чтоб все подсторы могли иметь доступ к одному и тому же объекту доступных эндпоинтов API через поле _endpoints в RootStore. Пример использования приведен ниже.
 
 ```typescript
 import { BaseRootStore, EndpointsType } from '@ktsstudio/mediaproject-stores';
 
-const endpoints: EndpointsType = {
+const ENDPOINTS: EndpointsType = {
   auth: {
-    url: 'https//my.backend/api/auth',
-    method: 'GET',
+    url: 'https//backend/api/auth',
+    method: 'GET',  // можно не указывать, если метод GET
   },
 };
 
-export default class RootStore extends BaseRootStore {
+class RootStore extends BaseRootStore {
   constructor() {
-    super(endpoints);
+    super(ENDPOINTS);
   }
 }
+
+const rootStore = new RootStore(ENDPOINTS);
+
+console.log(rootStore._endpoints); // { auth: { url: 'https//backend/api/auth', method: 'GET' } }
 ```
 
 ### BaseSubstore
 
-If you extend [this store](./src/stores/BaseSubstore.ts) when creating your substore you'll be able to use predefined properties `loading` and `error` (also their setters) and have acces to `RootStore` if you pass it to parent's constructor. Example of usage is below.
+Бызовый [стор](./src/stores/BaseSubstore.ts). Должен находиться внутри RootStore. Принимает в конструкторе ссылку на RootStore, хранит ее в поле `rootStore` для обращения к полям главного стора (например, для чтения из него эндпоинтов API через `this.rootStore._endpoints`). Содержит `observable` поля `loading` (поле для отслеживания начала и окончания загрузки) and `error` (поле для индикации возникновения ошибки), а так же сеттеры для них (`setLoading` и `setError`). Пример использования приведен ниже.
 
 ```typescript
 import { BaseSubstore } from '@ktsstudio/mediaproject-stores';
-import { makeAutoObservable } from 'mobx';
+import { action, makeObservable, observable } from 'mobx';
 
-import RootStore, { endpoints } from './RootStore';
+import RootStore from './RootStore';
 
 export default class MySubstore extends BaseSubstore<RootStore> {
   data: DataType | null = null;
@@ -49,8 +53,11 @@ export default class MySubstore extends BaseSubstore<RootStore> {
   constructor(rootStore: RootStore) {
     super(rootStore);
 
-    makeAutoObservable(this, {
-      rootStore: false,
+    makeObservable(this, {
+        data: observable,
+
+        getData: action,
+        setData: action,
     });
   }
 
@@ -66,7 +73,7 @@ export default class MySubstore extends BaseSubstore<RootStore> {
     this.setLoading(true);
 
     try {
-      const response = await fetch(endpoints.data.url);
+      const response = await fetch(this.rootStore._endpoints.data.url);
       this.setData(await response.json());
     } catch {
       this.setError(true);
@@ -79,7 +86,8 @@ export default class MySubstore extends BaseSubstore<RootStore> {
 
 ### BaseUserStore
 
-You can extend your `UserStore` with [this store](./src/stores/BaseUserStore.ts) or use it as it is. Example of usage is below.
+[Стор](./src/stores/BaseUserStore.ts) для работы с данными юзера. Должен находиться внутри RootStore. Принимает в конструкторе ссылку на него.
+`UserStore` в вашем приложении должен быть отнаследован от этого стора. Пример использования приведен ниже.
 
 ```typescript
 // store/RootStore.ts
@@ -105,14 +113,15 @@ export function useUserStore(): BaseUserStore {
 }
 ```
 
-And then in component:
+Обращение в компоненте:
 
 ```typescript
 // MyComponents.ts
 
 import * as React from 'react';
-import { useUserStore } from 'store/hooks';
 import { observer } from 'mobx';
+
+import { useUserStore } from 'store/hooks';
 
 const MyComponent = () => {
   const { auth } = useUserStore();
@@ -124,25 +133,33 @@ const MyComponent = () => {
   return <div>hello world</div>
 };
 
-export default MyComponent;
+export default observer(MyComponent);
 ```
 
-And that's it!
 
-List of `BaseUserStore` observables:
+#### observable поля в `BaseUserStore`:
 
-| **Observable**  | **Type**                | **Default** | **Description**                                           |
-|-----------------|-------------------------|-------------|-----------------------------------------------------------|
-| user            | ApiBaseUserType \| null | null        | object with user info                                     |
-| flags           | ApiFlagsType            | {}          | user flags (also can find them in user)                   |
-| messagesAllowed | boolean                 | false       | did user gave permission to send him messages from group  |
-
-List of `BaseUserStore` actions: 
-
-| **Action** | **Params**                    | **Returns**                                    | **Description**             |
-|------------|-------------------------------|------------------------------------------------|-----------------------------|
-| auth       | none                          | Promise<{ response: ApiBaseAuthType \| null }> | action to process user auth |
-| flag       | name: string,  value: boolean | Promise<boolean>                               | action to send user flag    |
-| get        | none                          | Promise<{ response: ApiBaseUserType \| null }> | action to update user info  |
+| **Observable**  | **Type**               | **Default** | **Setter**         | **Description**                                                  |
+|-----------------|------------------------|-------------|--------------------|------------------------------------------------------------------|
+| user            | ApiBaseUserType \ null | null        | setUser            | объект с данными пользователя                                    |
+| messagesAllowed | boolean                | false       | setMessagesAllowed | давал ли пользователь разрешение на отправку сообщений от группы |
+| gettingUser     | boolean                | false       | setGettingUser     | активен ли запрос получения данных юзера                         |
+| sendingFlag     | boolean                | false       | setSendingFlag     | активен ли запрос установки флага                                |
 
 
+#### computed поля в `BaseUserStore`:
+
+| **Computed**    | **Type**               | **Description**                |
+|-----------------|------------------------|--------------------------------|
+| flags           | ApiFlagsType           | объект с флагами из user.flags |
+
+
+#### `action` методы в `BaseUserStore`: 
+
+| **Action** | **Params**                   | **Returns**                                                       | **Description**                                                             |   |
+|------------|------------------------------|-------------------------------------------------------------------|-----------------------------------------------------------------------------|---|
+| auth       | -                            | Promise<{ response: ApiBaseAuthType \ null }>                     | метод авторизации, шлет запрос auth из rootStore._endpoints                 |   |
+| flag       | name: string, value: boolean | Promise<boolean>                                                  | метод установки флага, , шлет запрос flag из rootStore._endpoints           |   |
+| get        | -                            | Promise<{ response: ApiBaseGetUserType<ApiBaseUserType> \ null }> | метод получения данных пользователя, шлет запрос auth из rootStore._getUser |   |
+
+а так же сеттеры для всех `observable` полей
