@@ -137,7 +137,7 @@ export default observer(MyComponent);
 ```
 
 
-#### observable поля в `BaseUserStore`:
+#### `observable` поля в `BaseUserStore`:
 
 | **Observable**  | **Type**               | **Default** | **Setter**         | **Description**                                                  |
 |-----------------|------------------------|-------------|--------------------|------------------------------------------------------------------|
@@ -147,7 +147,7 @@ export default observer(MyComponent);
 | sendingFlag     | boolean                | false       | setSendingFlag     | активен ли запрос установки флага                                |
 
 
-#### computed поля в `BaseUserStore`:
+#### `computed` поля в `BaseUserStore`:
 
 | **Computed**    | **Type**               | **Description**                |
 |-----------------|------------------------|--------------------------------|
@@ -156,10 +156,10 @@ export default observer(MyComponent);
 
 #### `action` методы в `BaseUserStore`: 
 
-| **Action** | **Params**                   | **Returns**                                                       | **Description**                                                             |   |
-|------------|------------------------------|-------------------------------------------------------------------|-----------------------------------------------------------------------------|---|
-| auth       | -                            | Promise<{ response: ApiBaseAuthType \ null }>                     | метод авторизации, шлет запрос auth из rootStore._endpoints                 |   |
-| flag       | name: string, value: boolean | Promise<boolean>                                                  | метод установки флага, , шлет запрос flag из rootStore._endpoints           |   |
-| get        | -                            | Promise<{ response: ApiBaseGetUserType<ApiBaseUserType> \ null }> | метод получения данных пользователя, шлет запрос auth из rootStore._getUser |   |
+| **Action** | **Params**                   | **Returns**                                                       | **Description**                                                             |
+|------------|------------------------------|-------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| auth       | -                            | Promise<{ response: ApiBaseAuthType \ null }>                     | метод авторизации, шлет запрос auth из rootStore._endpoints                 |
+| flag       | name: string, value: boolean | Promise<boolean>                                                  | метод установки флага, , шлет запрос flag из rootStore._endpoints           |
+| get        | -                            | Promise<{ response: ApiBaseGetUserType<ApiBaseUserType> \ null }> | метод получения данных пользователя, шлет запрос auth из rootStore._getUser |
 
 а так же сеттеры для всех `observable` полей
