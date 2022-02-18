@@ -1,4 +1,6 @@
 export default function logError(error: string): void {
-  // eslint-disable-next-line
-  console.error(`[@ktsstudio/mediaproject-stores] ${error}`);
+  if (window.is_dev) {
+    // eslint-disable-next-line
+    console.error(`[@ktsstudio/mediaproject-stores] ${error}`);
+  }
 }

@@ -20,3 +20,7 @@ export type ApiBaseAuthType<UserT = ApiBaseUserType> = Record<
   user: UserT;
   messages_allowed?: boolean;
 };
+
+export type ApiBaseGetUserType<UserT = ApiBaseUserType> = {
+  user: UserT;
+}

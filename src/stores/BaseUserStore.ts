@@ -1,11 +1,11 @@
-import { makeObservable, observable, action } from 'mobx';
+import { makeObservable, observable, action, computed } from 'mobx';
 import { api, ApiResponse } from '@ktsstudio/mediaproject-utils';
 
 import { addParamsToEndpointUrl, sendSentryError, logError } from '../utils';
 
 import BaseRootStore from './BaseRootStore';
 import BaseSubstore from './BaseSubstore';
-import { ApiBaseUserType, ApiBaseAuthType, ApiFlagsType } from './types/api';
+import { ApiBaseUserType, ApiBaseAuthType, ApiFlagsType, ApiBaseGetUserType } from './types/api';
 
 export default class BaseUserStore<
   RootStoreT extends BaseRootStore = BaseRootStore,
@@ -13,7 +13,6 @@ export default class BaseUserStore<
   AuthT extends ApiBaseAuthType = ApiBaseAuthType<UserT>
 > extends BaseSubstore<RootStoreT> {
   user: null | UserT = null;
-  flags: ApiFlagsType = {};
   messagesAllowed = false;
 
   sendingFlag = false;
@@ -24,16 +23,16 @@ export default class BaseUserStore<
 
     makeObservable(this, {
       user: observable,
-      flags: observable,
       messagesAllowed: observable,
 
-      sendingFlag: observable,
       gettingUser: observable,
+      sendingFlag: observable,
 
-      setData: action,
+      flags: computed,
+
+      setAuthData: action,
       setUser: action,
       setFlag: action,
-      setFlags: action,
       setMessagesAllowed: action,
       setSendingFlag: action,
       setGettingUser: action,
@@ -44,28 +43,32 @@ export default class BaseUserStore<
     });
   }
 
-  setData = (value: AuthT): void => {
-    this.setUser(value.user as UserT);
+  get flags(): ApiFlagsType {
+    return this.user?.flags || {};
+  }
 
-    if (value.user.flags) {
-      this.setFlags(value.user.flags);
-    }
+  setAuthData = (value: AuthT): void => {
+    this.setUser(value.user as UserT);
 
     if (value.messages_allowed) {
       this.setMessagesAllowed(true);
     }
   };
 
-  setUser = (value: null | UserT): void => {
+  setUser = (value: UserT | null): void => {
     this.user = value;
   };
 
   setFlag = (name: string, value: boolean): void => {
-    this.flags[name] = value;
-  };
+    if (!this.user) {
+      return;
+    }
 
-  setFlags = (value: ApiFlagsType): void => {
-    this.flags = value;
+    if (!this.user.flags) {
+      this.user.flags = {[name]: value}
+    } else {
+      this.user.flags[name] = value;
+    }
   };
 
   setMessagesAllowed = (value: boolean): void => {
@@ -104,13 +107,13 @@ export default class BaseUserStore<
       return { response: null };
     }
 
-    this.setData(response);
+    this.setAuthData(response);
 
     this.setLoading(false);
     return { response };
   };
 
-  get = async (): Promise<{ response: UserT | null }> => {
+  get = async (): Promise<{ response: ApiBaseGetUserType<UserT> | null }> => {
     if (!this.rootStore._endpoints.getUser) {
       logError('Missing endpoint for get user method in BaseUserStore');
       return { response: null };
@@ -122,7 +125,7 @@ export default class BaseUserStore<
 
     this.setGettingUser(true);
 
-    const { response, error, errorData }: ApiResponse<UserT> = await api(
+    const { response, error, errorData }: ApiResponse<ApiBaseGetUserType<UserT>> = await api(
       this.rootStore._endpoints.getUser
     );
 
@@ -135,6 +138,8 @@ export default class BaseUserStore<
       this.setGettingUser(false);
       return { response: null };
     }
+
+    this.setUser(response.user);
 
     this.setGettingUser(false);
     return { response };
@@ -166,7 +171,7 @@ export default class BaseUserStore<
           value,
         },
       });
-
+      
       this.setSendingFlag(false);
       return false;
     }
