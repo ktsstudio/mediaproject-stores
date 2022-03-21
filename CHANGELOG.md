@@ -1,3 +1,7 @@
+### v1.1.1
+- [*] lint
+- [*] dependencies
+
 ### v1.1.0
 - [*] refactor according to api schema
 - [*] fix send user flag method payload 

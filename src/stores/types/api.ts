@@ -23,4 +23,4 @@ export type ApiBaseAuthType<UserT = ApiBaseUserType> = Record<
 
 export type ApiBaseGetUserType<UserT = ApiBaseUserType> = {
   user: UserT;
-}
+};

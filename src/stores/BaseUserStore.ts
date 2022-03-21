@@ -5,7 +5,12 @@ import { addParamsToEndpointUrl, sendSentryError, logError } from '../utils';
 
 import BaseRootStore from './BaseRootStore';
 import BaseSubstore from './BaseSubstore';
-import { ApiBaseUserType, ApiBaseAuthType, ApiFlagsType, ApiBaseGetUserType } from './types/api';
+import {
+  ApiBaseUserType,
+  ApiBaseAuthType,
+  ApiFlagsType,
+  ApiBaseGetUserType,
+} from './types/api';
 
 export default class BaseUserStore<
   RootStoreT extends BaseRootStore = BaseRootStore,
@@ -65,7 +70,7 @@ export default class BaseUserStore<
     }
 
     if (!this.user.flags) {
-      this.user.flags = {[name]: value}
+      this.user.flags = { [name]: value };
     } else {
       this.user.flags[name] = value;
     }
@@ -125,7 +130,11 @@ export default class BaseUserStore<
 
     this.setGettingUser(true);
 
-    const { response, error, errorData }: ApiResponse<ApiBaseGetUserType<UserT>> = await api(
+    const {
+      response,
+      error,
+      errorData,
+    }: ApiResponse<ApiBaseGetUserType<UserT>> = await api(
       this.rootStore._endpoints.getUser
     );
 
@@ -171,7 +180,7 @@ export default class BaseUserStore<
           value,
         },
       });
-      
+
       this.setSendingFlag(false);
       return false;
     }
