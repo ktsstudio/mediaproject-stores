@@ -1,3 +1,6 @@
+### v1.1.2
+- [+] add errors in BaseRootStore
+
 ### v1.1.1
 - [*] lint
 - [*] dependencies

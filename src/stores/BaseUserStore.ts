@@ -101,9 +101,11 @@ export default class BaseUserStore<
     );
 
     if (!response) {
-      sendSentryError(error, {
-        url: this.rootStore._endpoints.auth,
+      sendSentryError({
+        error,
         errorData,
+        url: this.rootStore._endpoints.auth.url,
+        params: window.search,
       });
 
       this.rootStore.setFatalError(true);
@@ -139,9 +141,12 @@ export default class BaseUserStore<
     );
 
     if (!response) {
-      sendSentryError(error, {
-        url: this.rootStore._endpoints.getUser,
+      this.rootStore.handleError({
+        response,
+        error,
         errorData,
+        url: this.rootStore._endpoints.getUser.url,
+        showError: true,
       });
 
       this.setGettingUser(false);
@@ -172,13 +177,13 @@ export default class BaseUserStore<
     );
 
     if (!response || error) {
-      sendSentryError(error, {
-        url: this.rootStore._endpoints.flag,
+      this.rootStore.handleError({
+        response,
+        error,
         errorData,
-        payload: {
-          name,
-          value,
-        },
+        url: this.rootStore._endpoints.flag.url,
+        params: { name, value },
+        showError: true,
       });
 
       this.setSendingFlag(false);
