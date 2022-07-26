@@ -1,7 +1,7 @@
 import { makeObservable, observable, action, computed } from 'mobx';
 import { api, ApiResponse } from '@ktsstudio/mediaproject-utils';
 
-import { addParamsToEndpointUrl, sendSentryError, logError } from '../utils';
+import { addParamsToEndpointUrl, logError } from '../utils';
 
 import BaseRootStore from './BaseRootStore';
 import BaseSubstore from './BaseSubstore';
@@ -10,6 +10,7 @@ import {
   ApiBaseAuthType,
   ApiFlagsType,
   ApiBaseGetUserType,
+  ApiErrorDataType,
 } from './types/api';
 
 export default class BaseUserStore<
@@ -101,11 +102,11 @@ export default class BaseUserStore<
     );
 
     if (!response) {
-      sendSentryError(error, {
-        url: this.rootStore._endpoints.auth,
-        errorData,
-      });
-
+      this.rootStore.sentryStore?.captureApiException(
+        error,
+        errorData as ApiErrorDataType,
+        this.rootStore._endpoints.auth
+      );
       this.rootStore.setFatalError(true);
 
       this.setLoading(false);
@@ -139,10 +140,11 @@ export default class BaseUserStore<
     );
 
     if (!response) {
-      sendSentryError(error, {
-        url: this.rootStore._endpoints.getUser,
-        errorData,
-      });
+      this.rootStore.sentryStore?.captureApiException(
+        error,
+        errorData as ApiErrorDataType,
+        this.rootStore._endpoints.getUser
+      );
 
       this.setGettingUser(false);
       return { response: null };
@@ -172,14 +174,12 @@ export default class BaseUserStore<
     );
 
     if (!response || error) {
-      sendSentryError(error, {
-        url: this.rootStore._endpoints.flag,
-        errorData,
-        payload: {
-          name,
-          value,
-        },
-      });
+      this.rootStore.sentryStore?.captureApiException(
+        error,
+        errorData as ApiErrorDataType,
+        this.rootStore._endpoints.flag,
+        { name, value }
+      );
 
       this.setSendingFlag(false);
       return false;
