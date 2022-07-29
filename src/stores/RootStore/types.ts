@@ -1,9 +1,4 @@
-import { Method } from 'axios';
-
-export type EndpointType = {
-  url: string;
-  method?: Method;
-};
+import { EndpointType } from '../../types/endpoint';
 
 export type EndpointsType = Record<string, EndpointType> & {
   auth: EndpointType;

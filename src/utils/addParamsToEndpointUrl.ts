@@ -1,9 +1,9 @@
-import { EndpointType } from '../stores/types/stores';
+import { EndpointType } from '../types/endpoint';
 
-export default function addParamsToEndpointUrl(
+const addParamsToEndpointUrl = (
   { url, method }: EndpointType,
   params: string | Record<string, string>
-): EndpointType {
+): EndpointType => {
   if (typeof params === 'string') {
     return {
       method,
@@ -21,4 +21,6 @@ export default function addParamsToEndpointUrl(
     method,
     url: `${url}?${paramsAsString}`,
   };
-}
+};
+
+export { addParamsToEndpointUrl };

@@ -1,5 +1,3 @@
-import addParamsToEndpointUrl from './addParamsToEndpointUrl';
-import sendSentryError from './sendSentryError';
-import logError from './logError';
+export * from './addParamsToEndpointUrl';
 
-export { addParamsToEndpointUrl, sendSentryError, logError };
+export * from './log';
