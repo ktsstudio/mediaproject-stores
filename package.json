@@ -1,6 +1,6 @@
 {
   "name": "@ktsstudio/mediaproject-stores",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "author": "KTS Studio",
   "license": "MIT",
   "description": "Package with basic MobX stores for mediaprojects",
@@ -48,7 +48,7 @@
   },
   "peerDependencies": {
     "@ktsstudio/mediaproject-utils": "^4.0.0",
-    "@sentry/react": "^6.15.0",
+    "@sentry/react": "^7.11.1",
     "axios": "^0.24.0",
     "mobx": "^6.3.10"
   },

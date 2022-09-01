@@ -1,3 +1,9 @@
+## v2.1.0
+
+- [*] Sentry version
+- [+] independent Sentry utils
+- [*] SentryStore refactor
+
 # v2.0.0
 
 - [+] SentryStore

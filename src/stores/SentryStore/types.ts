@@ -1,24 +1,7 @@
-import { EndpointType } from '../../types';
+import { ScopeContext } from '@sentry/types/dist/scope';
+import { CaptureContext } from '@sentry/types';
 
-enum SentryTagEnum {
-  api = 'api',
-  vkBridge = 'vk_bridge',
-  render = 'render',
-  custom = 'custom',
-}
-
-type SentryUserType = {
-  id: string;
-  [key: string]: any;
-};
-
-type SentryConfigType = {
-  dsn?: string;
-  normalizeDepth: number;
-  user?: SentryUserType;
-};
-
-type ApiErrorDataType = {
+type APIErrorDataType = {
   code: string;
   message: string;
   status: string;
@@ -58,39 +41,50 @@ type VKBridgeErrorEventType = {
   data: VKBridgeErrorDataType;
 };
 
-type ExceptionType<T> = {
-  error: T;
-  extra?: Record<string, any>;
-  type: SentryTagEnum;
+type ExceptionType<E = any> = {
+  error: E;
+  context?: CaptureContext;
 };
 
-type RenderExceptionType<T> = {
-  error: T;
-  extra?: Record<string, any>;
+type CustomExceptionType<E = any> = Omit<ExceptionType<E>, 'context'> & {
+  type: 'render' | 'api' | 'vk_bridge' | 'fapi' | string;
+  context?: Partial<ScopeContext>;
 };
 
-type ApiExceptionType<T, ED> = {
-  error: T;
+type RenderExceptionType<E = any> = Omit<CustomExceptionType<E>, 'type'> & {
+  errorInfo: any;
+};
+
+type APIExceptionType<ED = APIErrorDataType, E = any> = Omit<
+  CustomExceptionType<E>,
+  'type'
+> & {
   errorData: ED;
-  endpoint: EndpointType;
-  payload?: Record<string, any>;
-};
-
-type VKBridgeExceptionType = {
-  errorEvent: VKBridgeErrorEventType;
   url: string;
   payload?: Record<string, any>;
 };
 
+type VKBridgeExceptionType<E = any> = Omit<CustomExceptionType<E>, 'type'> & {
+  error: VKBridgeErrorEventType;
+  url: string;
+  payload?: Record<string, any>;
+};
+
+type FAPIExceptionType<E = any> = Omit<CustomExceptionType<E>, 'type'> & {
+  url: string;
+  fields?: string;
+  status: string;
+  data?: any;
+};
+
 export {
-  SentryTagEnum,
-  SentryUserType,
-  SentryConfigType,
-  ApiErrorDataType,
+  APIErrorDataType,
   VKBridgeErrorDataType,
   VKBridgeErrorEventType,
   ExceptionType,
+  CustomExceptionType,
   RenderExceptionType,
-  ApiExceptionType,
+  APIExceptionType,
   VKBridgeExceptionType,
+  FAPIExceptionType,
 };
