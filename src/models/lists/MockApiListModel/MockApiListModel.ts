@@ -21,6 +21,15 @@ import { MockApiListModelProps, MockApiListModelPrivateFields } from './types';
  * @param {number} [sleepMs] - Время в миллисекундах, которое нужно подождать перед тем, как вернуть данные.
  * @param {number} [listLengthLimit] - Максимальная длина всего списка, который будет сгенерирован. Если не указано, то будет генерироваться бесконечный список.
  *
+ * @method
+ * @name load - Загрузить данные с сервера.
+ *
+ * @method
+ * @name refresh - Сбросить данные и загрузить заново.
+ *
+ * @method
+ * @name reset - Сбросить данные.
+ *
  * @example
  * import { ApiListModel } from 'mediaproject-stores';
  * import { ArticleType } from './types';
