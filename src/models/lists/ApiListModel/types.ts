@@ -1,7 +1,5 @@
 import { IMetaModel } from '../../MetaModel/types';
 
-import ApiListModel from './ApiListModel';
-
 export type ApiListModelPrivateFields =
   | '_list'
   | '_listLoaded'
@@ -12,17 +10,14 @@ export type ApiListModelPrivateFields =
   | '_appendList'
   | '_checkListLoaded';
 
-export interface ApiListFetchProps {
-  listLength: number;
+export interface ApiListFetchProps<T = unknown> {
   listLoaded: boolean;
   limitCountPerRequest: number;
-  empty: boolean;
-  lastItem: unknown;
-  lastItemId: string | undefined;
+  lastItem: T | undefined;
   currentPage: number;
 }
 
-export interface IApiListModel<T, RestApiT> extends ApiListFetchProps {
+export interface IApiListModel<T, RestApiT> extends ApiListFetchProps<T> {
   list: T[];
   meta: IMetaModel;
 
@@ -32,7 +27,7 @@ export interface IApiListModel<T, RestApiT> extends ApiListFetchProps {
 }
 
 export type ResponseApiListType<T> = {
-  list: T[];
+  list: T[] | null;
 };
 
 export type ResponseRestApiType<RestApiT> = {
@@ -44,7 +39,7 @@ export type ResponseApiType<T, RestApiT> = RestApiT extends undefined
   : ResponseApiListType<T> & ResponseRestApiType<RestApiT>;
 
 export type ApiListFetchFunction<T, RestApiT = undefined> = (
-  model: ApiListModel<T, RestApiT>
+  fetchProps: ApiListFetchProps<T>
 ) => Promise<ResponseApiType<T, RestApiT>>;
 
 export type ApiListModelProps<T, RestApiT = undefined> = {

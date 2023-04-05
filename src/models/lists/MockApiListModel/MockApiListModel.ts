@@ -3,7 +3,7 @@ import { action, makeObservable, override } from 'mobx';
 import { ApiListModel } from '../ApiListModel';
 import { ResponseApiType } from '../ApiListModel/types';
 
-import { SLEEP_MS_DEFAULT } from './config';
+import { SLEEP_TIMEOUT_DEFAULT } from './config';
 import { MockApiListModelProps, MockApiListModelPrivateFields } from './types';
 
 /**
@@ -17,9 +17,9 @@ import { MockApiListModelProps, MockApiListModelPrivateFields } from './types';
  * RestApiT - Тип данных, которые приходят с сервера, в случае, если нужно вернуть какие-то данные, которые не относятся к списку. По-умолчанию undefined.
  *
  * @param {ApiListFetchFunction<T, RestApiT>} fetchFunction - Callback-функция для генерации мокапов.
- * @param {number} [limitCountPerRequest] - Количество элементов, которое нужно загрузить с сервера за один запрос.
- * @param {number} [sleepMs] - Время в миллисекундах, которое нужно подождать перед тем, как вернуть данные.
- * @param {number} [listLengthLimit] - Максимальная длина всего списка, который будет сгенерирован. Если не указано, то будет генерироваться бесконечный список.
+ * @param {number} limitCountPerRequest - Количество элементов, которое нужно загрузить с сервера за один запрос.
+ * @param {number} sleepTimeoutMs - Время в миллисекундах, которое нужно подождать перед тем, как вернуть данные.
+ * @param {number} listLengthLimit - Максимальная длина всего списка, который будет сгенерирован. Если не указано, то будет генерироваться бесконечный список.
  *
  * @method
  * @name load - Загрузить данные с сервера.
@@ -44,40 +44,37 @@ import { MockApiListModelProps, MockApiListModelPrivateFields } from './types';
  *  });,
  * });
  */
-class MockApiListModel<T, ApiT = T, RestApiT = undefined> extends ApiListModel<
+class MockApiListModel<T, RestApiT = undefined> extends ApiListModel<
   T,
   RestApiT
 > {
   private _listLengthLimit?: number;
-  private _sleepMs: number;
+  private readonly _sleepTimeoutMs: number;
 
   constructor({
-    sleepMs = SLEEP_MS_DEFAULT,
+    sleepTimeoutMs = SLEEP_TIMEOUT_DEFAULT,
     listLengthLimit,
     ...props
   }: MockApiListModelProps<T, RestApiT>) {
     super(props);
 
-    this._sleepMs = sleepMs;
+    this._sleepTimeoutMs = sleepTimeoutMs;
     this._listLengthLimit = listLengthLimit;
 
-    makeObservable<
-      MockApiListModel<T, ApiT, RestApiT>,
-      MockApiListModelPrivateFields
-    >(this, {
+    makeObservable<this, MockApiListModelPrivateFields>(this, {
       _listLengthLimit: false,
-      _sleepMs: false,
-      _sleep: action,
+      _sleepTimeoutMs: false,
+      _sleep: false,
       _buildLimitedResponse: action,
 
       load: override,
-      refresh: override,
+      // refresh: override,
       reset: override,
     });
   }
 
   private _sleep(): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, this._sleepMs));
+    return new Promise((resolve) => setTimeout(resolve, this._sleepTimeoutMs));
   }
 
   private _buildLimitedResponse(
@@ -86,9 +83,15 @@ class MockApiListModel<T, ApiT = T, RestApiT = undefined> extends ApiListModel<
   ): ResponseApiType<T, RestApiT> {
     const restApiData = 'restApiData' in result ? result.restApiData : {};
 
+    if (result.list === null) {
+      this.meta.setLoadedErrorMeta();
+
+      return { restApiData } as unknown as ResponseApiType<T, RestApiT>;
+    }
+
     const limitedResult = {
       apiList: result.list.slice(0, listLengthLimit - this.list.length),
-      ...restApiData,
+      restApiData,
     };
 
     return limitedResult as unknown as ResponseApiType<T, RestApiT>;
@@ -105,14 +108,21 @@ class MockApiListModel<T, ApiT = T, RestApiT = undefined> extends ApiListModel<
       await this._sleep();
       const result = await this.fetchFunction(this);
 
-      const isLimited =
-        this._listLengthLimit &&
-        this.list.length + result.list.length >= this._listLengthLimit;
+      if (result.list === null) {
+        this.meta.setLoadedErrorMeta();
+        return;
+      }
 
-      if (this._listLengthLimit && isLimited) {
+      const listLengthLimit = this._listLengthLimit;
+
+      const isLimited =
+        listLengthLimit !== undefined &&
+        this.list.length + result.list.length >= listLengthLimit;
+
+      if (isLimited) {
         const limitedResult = this._buildLimitedResponse(
           result,
-          this._listLengthLimit
+          listLengthLimit
         );
 
         return this._setFetchResult(limitedResult);
@@ -122,14 +132,6 @@ class MockApiListModel<T, ApiT = T, RestApiT = undefined> extends ApiListModel<
     } catch (error) {
       this.meta.setLoadedErrorMeta();
     }
-  }
-
-  public override async refresh(): Promise<RestApiT | undefined> {
-    this.reset();
-
-    const restApiData = await this.load();
-
-    return restApiData;
   }
 }
 

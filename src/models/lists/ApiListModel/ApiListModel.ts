@@ -20,12 +20,12 @@ import {
  *  Предоставляет методы для загрузки данных с сервера с оффсетом или пагинацией, контроля состояния загрузки, сброса данных.
  *  При достижении конца списка, модель устанавливает флаг, что список загружен.
  *
- * @implements {ApiListFetchProps<T, RestApiT>}
+ * @implements {ApiListFetchProps<T>}
  *  T - Тип данных, которые будут храниться в модели.
  *  RestApiT - Тип данных, которые приходят с сервера, в случае, если нужно вернуть какие-то данные, которые не относятся к списку. По-умолчанию undefined.
  *
- * @param {ApiListFetchFunction<T, RestApiT>} fetchFunction - Callback-функция для загрузки данных с сервера. При вызове функции, в неё передаётся объект fetchProps: ApiListFetchProps.
- * @param {number} [limitPerRequest] - Количество элементов, которое нужно загрузить с сервера за один запрос.
+ * @param {ApiListFetchFunction<T, RestApiT>} fetchFunction - Callback-функция для загрузки данных с сервера. При вызове функции, в неё передаётся объект fetchProps: ApiListFetchProps<T>.
+ * @param {number} limitPerRequest - Количество элементов, которое нужно загрузить с сервера за один запрос.
  *
  * @method
  * @name load - Загрузить данные с сервера.
@@ -62,13 +62,13 @@ class ApiListModel<T, RestApiT = undefined>
 {
   private _list: T[] = [];
 
-  private _fetchFunction: ApiListFetchFunction<T, RestApiT>;
-
   private _listLoaded = false;
+
+  private readonly _fetchFunction: ApiListFetchFunction<T, RestApiT>;
 
   private readonly _limitCountPerRequest: number;
 
-  private _meta: MetaModel = new MetaModel();
+  private readonly _meta: MetaModel = new MetaModel();
 
   constructor({
     fetchFunction,
@@ -77,9 +77,9 @@ class ApiListModel<T, RestApiT = undefined>
     this._fetchFunction = fetchFunction;
     this._limitCountPerRequest = limitPerRequest;
 
-    makeObservable<ApiListModel<T, RestApiT>, ApiListModelPrivateFields>(this, {
+    makeObservable<this, ApiListModelPrivateFields>(this, {
       _list: observable.ref,
-      _listLoaded: observable.ref,
+      _listLoaded: observable,
       _meta: observable.ref,
       _limitCountPerRequest: false,
       _fetchFunction: action,
@@ -95,43 +95,12 @@ class ApiListModel<T, RestApiT = undefined>
       fetchProps: computed,
       limitCountPerRequest: computed,
       lastItem: computed,
-      lastItemId: computed,
       currentPage: computed,
 
       load: action.bound,
       refresh: action.bound,
       reset: action.bound,
     });
-  }
-
-  public async load(): Promise<RestApiT | undefined> {
-    if (this.listLoaded || this.meta.isLoading) {
-      return;
-    }
-
-    this.meta.setLoadedStartMeta();
-
-    try {
-      const result = await this._fetchFunction(this);
-
-      return this._setFetchResult(result);
-    } catch (error) {
-      this.meta.setLoadedErrorMeta();
-    }
-  }
-
-  public async refresh(): Promise<RestApiT | undefined> {
-    this.reset();
-
-    const restApiData = await this.load();
-
-    return restApiData;
-  }
-
-  public reset(): void {
-    this.meta.reset();
-    this._list = [];
-    this._listLoaded = false;
   }
 
   public get list(): T[] {
@@ -154,14 +123,11 @@ class ApiListModel<T, RestApiT = undefined>
     return this._meta;
   }
 
-  public get fetchProps(): ApiListFetchProps {
+  public get fetchProps(): ApiListFetchProps<T> {
     return {
-      listLength: this.listLength,
       listLoaded: this.listLoaded,
       limitCountPerRequest: this.limitCountPerRequest,
-      empty: this.empty,
       lastItem: this.lastItem,
-      lastItemId: this.lastItemId,
       currentPage: this.currentPage,
     };
   }
@@ -174,21 +140,44 @@ class ApiListModel<T, RestApiT = undefined>
     return this._list[this.listLength - 1];
   }
 
-  public get lastItemId(): string | undefined {
-    const { lastItem } = this;
-
-    if (lastItem && typeof lastItem === 'object' && 'id' in lastItem) {
-      const lastItemWithId = lastItem as T & { id: string };
-      return lastItemWithId.id;
-    }
-  }
-
   public get currentPage(): number {
     return this.listLength / this.limitCountPerRequest;
   }
 
   protected get fetchFunction(): ApiListFetchFunction<T, RestApiT> {
     return this._fetchFunction;
+  }
+
+  public async load(): Promise<RestApiT | undefined> {
+    if (this.listLoaded || this.meta.isLoading) {
+      return;
+    }
+
+    this.meta.setLoadedStartMeta();
+
+    try {
+      const result = await this._fetchFunction(this.fetchProps);
+
+      const restApiData = this._setFetchResult(result);
+
+      this.meta.setLoadedSuccessMeta();
+
+      return restApiData;
+    } catch (error) {
+      this.meta.setLoadedErrorMeta();
+    }
+  }
+
+  public async refresh(): Promise<RestApiT | undefined> {
+    this.reset();
+
+    return this.load();
+  }
+
+  public reset(): void {
+    this.meta.reset();
+    this._list = [];
+    this._listLoaded = false;
   }
 
   private _appendList(list: T[]): void {
@@ -201,17 +190,20 @@ class ApiListModel<T, RestApiT = undefined>
     }
   }
 
-  protected _setFetchResult(result: ResponseApiType<T, RestApiT>) {
+  protected _setFetchResult(
+    result: ResponseApiType<T, RestApiT>
+  ): RestApiT | undefined {
     const { list } = result;
-    const restApiData =
-      'restApiData' in result ? result.restApiData : undefined;
+
+    if (list === null) {
+      this.meta.setLoadedErrorMeta();
+      return;
+    }
 
     this._checkListLoaded(list);
     this._appendList(list);
 
-    this.meta.setLoadedSuccessMeta();
-
-    return restApiData;
+    return 'restApiData' in result ? result.restApiData : undefined;
   }
 }
 

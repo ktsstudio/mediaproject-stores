@@ -1,1 +1,1 @@
-export const SLEEP_MS_DEFAULT = 500;
+export const SLEEP_TIMEOUT_DEFAULT = 500;
