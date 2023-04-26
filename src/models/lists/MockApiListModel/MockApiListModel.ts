@@ -1,7 +1,6 @@
-import { action, makeObservable, override } from 'mobx';
+import { makeObservable, override } from 'mobx';
 
 import { ApiListModel } from '../ApiListModel';
-import { ResponseApiType } from '../ApiListModel/types';
 
 import { SLEEP_TIMEOUT_DEFAULT } from './config';
 import { MockApiListModelProps, MockApiListModelPrivateFields } from './types';
@@ -38,8 +37,8 @@ import { MockApiListModelProps, MockApiListModelPrivateFields } from './types';
  *  fetchFunction: async ({ limitCountPerRequest }) => {
  *   return {
  *    apiList: Array.from({ length: limitCountPerRequest }, () => ({
- *    id: faker.datatype.uuid(),
- *    text: faker.lorem.paragraph(),
+ *      id: faker.datatype.uuid(),
+ *      text: faker.lorem.paragraph(),
  *   })),
  *  });,
  * });
@@ -65,36 +64,14 @@ class MockApiListModel<T, RestApiT = undefined> extends ApiListModel<
       _listLengthLimit: false,
       _sleepTimeoutMs: false,
       _sleep: false,
-      _buildLimitedResponse: action,
 
       load: override,
-      // refresh: override,
       reset: override,
     });
   }
 
   private _sleep(): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, this._sleepTimeoutMs));
-  }
-
-  private _buildLimitedResponse(
-    result: ResponseApiType<T, RestApiT>,
-    listLengthLimit: number
-  ): ResponseApiType<T, RestApiT> {
-    const restApiData = 'restApiData' in result ? result.restApiData : {};
-
-    if (result.list === null) {
-      this.meta.setLoadedErrorMeta();
-
-      return { restApiData } as unknown as ResponseApiType<T, RestApiT>;
-    }
-
-    const limitedResult = {
-      apiList: result.list.slice(0, listLengthLimit - this.list.length),
-      restApiData,
-    };
-
-    return limitedResult as unknown as ResponseApiType<T, RestApiT>;
   }
 
   public override async load(): Promise<RestApiT | undefined> {
@@ -110,27 +87,32 @@ class MockApiListModel<T, RestApiT = undefined> extends ApiListModel<
 
       if (result.list === null) {
         this.meta.setLoadedErrorMeta();
-        return;
+      } else {
+        this._setLimitedResult(result.list, this._listLengthLimit);
+
+        this.meta.setLoadedSuccessMeta();
       }
 
-      const listLengthLimit = this._listLengthLimit;
-
-      const isLimited =
-        listLengthLimit !== undefined &&
-        this.list.length + result.list.length >= listLengthLimit;
-
-      if (isLimited) {
-        const limitedResult = this._buildLimitedResponse(
-          result,
-          listLengthLimit
-        );
-
-        return this._setFetchResult(limitedResult);
-      }
-
-      return this._setFetchResult(result);
+      return this._getResultRestApiData(result);
     } catch (error) {
       this.meta.setLoadedErrorMeta();
+    }
+  }
+
+  protected _setLimitedResult(list: T[], listLengthLimit?: number) {
+    const isLimited =
+      listLengthLimit !== undefined &&
+      this.list.length + list.length >= listLengthLimit;
+
+    if (isLimited) {
+      const limitedResultList = list.slice(
+        0,
+        listLengthLimit - this.list.length
+      );
+
+      this._setFetchResult(limitedResultList);
+    } else {
+      this._setFetchResult(list);
     }
   }
 }

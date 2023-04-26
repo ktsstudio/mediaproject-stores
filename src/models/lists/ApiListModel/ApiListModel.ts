@@ -8,8 +8,8 @@ import {
   ApiListFetchFunction,
   ApiListModelProps,
   IApiListModel,
-  ResponseApiType,
   ApiListFetchProps,
+  ResponseApiType,
 } from './types';
 
 /**
@@ -158,11 +158,15 @@ class ApiListModel<T, RestApiT = undefined>
     try {
       const result = await this._fetchFunction(this.fetchProps);
 
-      const restApiData = this._setFetchResult(result);
+      if (result.list === null) {
+        this.meta.setLoadedErrorMeta();
+      } else {
+        this._setFetchResult(result.list);
 
-      this.meta.setLoadedSuccessMeta();
+        this.meta.setLoadedSuccessMeta();
+      }
 
-      return restApiData;
+      return this._getResultRestApiData(result);
     } catch (error) {
       this.meta.setLoadedErrorMeta();
     }
@@ -190,19 +194,12 @@ class ApiListModel<T, RestApiT = undefined>
     }
   }
 
-  protected _setFetchResult(
-    result: ResponseApiType<T, RestApiT>
-  ): RestApiT | undefined {
-    const { list } = result;
-
-    if (list === null) {
-      this.meta.setLoadedErrorMeta();
-      return;
-    }
-
+  protected _setFetchResult(list: T[]) {
     this._checkListLoaded(list);
     this._appendList(list);
+  }
 
+  protected _getResultRestApiData(result: ResponseApiType<T, RestApiT>) {
     return 'restApiData' in result ? result.restApiData : undefined;
   }
 }
