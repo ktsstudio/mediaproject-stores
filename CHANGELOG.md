@@ -1,3 +1,10 @@
+## v2.1.1
+
+- [+] PollingModel
+- [+] BlurAndFocusHandlerModel
+- [+] TimerModel
+- [+] FixedTimerModel
+
 ## v2.1.0
 
 - [*] Sentry version
