@@ -13,6 +13,7 @@ export type ApiListModelPrivateFields =
 export interface ApiListFetchProps<T = unknown> {
   listLoaded: boolean;
   limitCountPerRequest: number;
+  listLength: number;
   lastItem: T | undefined;
   currentPage: number;
 }

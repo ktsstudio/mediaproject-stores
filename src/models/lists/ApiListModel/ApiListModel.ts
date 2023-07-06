@@ -20,7 +20,7 @@ import {
  *  Предоставляет методы для загрузки данных с сервера с оффсетом или пагинацией, контроля состояния загрузки, сброса данных.
  *  При достижении конца списка, модель устанавливает флаг, что список загружен.
  *
- * @implements {ApiListFetchProps<T>}
+ * @implements {ApiListFetchProps<T, RestApiT>}
  *  T - Тип данных, которые будут храниться в модели.
  *  RestApiT - Тип данных, которые приходят с сервера, в случае, если нужно вернуть какие-то данные, которые не относятся к списку. По-умолчанию undefined.
  *
@@ -43,14 +43,14 @@ import {
  *
  * @example
  * import { ApiListModel } from 'mediaproject-stores';
- * import { ArtcileType } from './types';
+ * import { ArticleType } from './types';
  *
- * const articlesListModel = new ApiListModel<ArtcileType>({
+ * const articlesListModel = new ApiListModel<ArticleType>({
  *  fetchFunction: fetchArticles,
  *  limitPerRequest: 10,
  * });
  *
- * const fetchArticles: ApiListFetchFunction<ArtcileType> = async (fetchProps) => {
+ * const fetchArticles: ApiListFetchFunction<ArticleType> = async (fetchProps) => {
  *   const { listLength, limitCountPerRequest } = fetchProps;
  *   const response = await fetch(`/api/list?offset=${listLength}&limit=${limitCountPerRequest}`);
  *   const apiList = await response.json();
@@ -127,6 +127,7 @@ class ApiListModel<T, RestApiT = undefined>
     return {
       listLoaded: this.listLoaded,
       limitCountPerRequest: this.limitCountPerRequest,
+      listLength: this.listLength,
       lastItem: this.lastItem,
       currentPage: this.currentPage,
     };
@@ -141,7 +142,7 @@ class ApiListModel<T, RestApiT = undefined>
   }
 
   public get currentPage(): number {
-    return this.listLength / this.limitCountPerRequest;
+    return Math.ceil(this.listLength / this.limitCountPerRequest) || 1;
   }
 
   protected get fetchFunction(): ApiListFetchFunction<T, RestApiT> {
@@ -188,7 +189,7 @@ class ApiListModel<T, RestApiT = undefined>
     this._list = [...this._list, ...list];
   }
 
-  private _checkListLoaded(apiListResponse: T[]): void {
+  protected _checkListLoaded(apiListResponse: T[]): void {
     if (apiListResponse.length < this.limitCountPerRequest) {
       this._listLoaded = true;
     }

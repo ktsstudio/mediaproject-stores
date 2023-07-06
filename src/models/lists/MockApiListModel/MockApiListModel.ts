@@ -16,7 +16,7 @@ import { MockApiListModelProps, MockApiListModelPrivateFields } from './types';
  * RestApiT - Тип данных, которые приходят с сервера, в случае, если нужно вернуть какие-то данные, которые не относятся к списку. По-умолчанию undefined.
  *
  * @param {ApiListFetchFunction<T, RestApiT>} fetchFunction - Callback-функция для генерации мокапов.
- * @param {number} limitCountPerRequest - Количество элементов, которое нужно загрузить с сервера за один запрос.
+ * @param {number} limitPerRequest - Количество элементов, которое нужно загрузить с сервера за один запрос.
  * @param {number} sleepTimeoutMs - Время в миллисекундах, которое нужно подождать перед тем, как вернуть данные.
  * @param {number} listLengthLimit - Максимальная длина всего списка, который будет сгенерирован. Если не указано, то будет генерироваться бесконечный список.
  *
@@ -30,7 +30,7 @@ import { MockApiListModelProps, MockApiListModelPrivateFields } from './types';
  * @name reset - Сбросить данные.
  *
  * @example
- * import { ApiListModel } from 'mediaproject-stores';
+ * import { MockApiListModel } from 'mediaproject-stores';
  * import { ArticleType } from './types';
  *
  * const mockArticlesListModel = new MockApiListModel<ArticleType>({
@@ -47,7 +47,7 @@ class MockApiListModel<T, RestApiT = undefined> extends ApiListModel<
   T,
   RestApiT
 > {
-  private _listLengthLimit?: number;
+  private readonly _listLengthLimit?: number;
   private readonly _sleepTimeoutMs: number;
 
   constructor({
