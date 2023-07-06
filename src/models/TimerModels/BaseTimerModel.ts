@@ -1,6 +1,6 @@
 import { action, computed, makeObservable, observable } from 'mobx';
 
-import { Interface } from './interface';
+import { ITimerModel } from './interfaces';
 import { TIMER_TICK_INTERVAL_MSEC, TIMER_TICK_INTERVAL_SEC } from './config';
 
 type TimerModelPrivateFields =
@@ -10,7 +10,7 @@ type TimerModelPrivateFields =
   | '_setTimeIntervalID'
   | '_clearTimeIntervalID';
 
-export abstract class BaseTimerModel implements Interface {
+export abstract class BaseTimerModel implements ITimerModel {
   protected _timeIntervalID: NodeJS.Timeout | null = null;
 
   /**

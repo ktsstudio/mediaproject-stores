@@ -1,4 +1,6 @@
-export default class BlurAndFocusHandlerModel {
+import { ILocalStore } from '../../types/ILocalStore';
+
+export default class BlurAndFocusHandlerModel implements ILocalStore {
   private readonly _blur: VoidFunction | null;
   private readonly _focus: VoidFunction | null;
 
@@ -7,11 +9,8 @@ export default class BlurAndFocusHandlerModel {
     this._focus = focus ?? null;
   }
 
-  addListener() {
-    /** Игра ставится на паузу, когда пользователь уходит с вкладки */
+  addListeners() {
     this._blur && window.addEventListener('blur', this._blur);
-
-    /** и снимается с паузы, когда он возвращается */
     this._focus && window.addEventListener('focus', this._focus);
   }
 
