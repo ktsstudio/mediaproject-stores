@@ -1,3 +1,5 @@
-export { default as TimerModel } from './TimerModel';
+export * from './BaseTimerModel';
 
-export { default as FixedTimerModel } from './FixedTimerModel';
+export * from './TimerModel';
+
+export * from './FixedTimerModel';

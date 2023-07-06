@@ -1,6 +1,6 @@
 import { BaseTimerModel } from './BaseTimerModel';
 
-export default class TimerModel extends BaseTimerModel {
+export class TimerModel extends BaseTimerModel {
   /**
    * Хранит исходный период времени работы таймера
    */
@@ -10,6 +10,7 @@ export default class TimerModel extends BaseTimerModel {
     super(onTimerUp);
 
     this._setTime(time);
+    this._secondsLeft = this._initTimeLeft();
   }
 
   protected override _initTimeLeft(): number {
@@ -17,7 +18,7 @@ export default class TimerModel extends BaseTimerModel {
   }
 
   protected _setTime(time: number): void {
-    this._time = time < 0 ? 0 : time;
+    this._time = time < 0 ? 0 : Math.ceil(time);
   }
 
   override restart(time = this._time): void {

@@ -4,7 +4,7 @@ interface ILocalStore {
 }
 
 export interface Interface extends ILocalStore {
-  get timeLeft(): number;
+  get secondsLeft(): number;
   get isFinished(): boolean;
   get isRunning(): boolean;
   get isPaused(): boolean;

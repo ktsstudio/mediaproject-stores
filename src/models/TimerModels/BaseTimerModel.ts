@@ -4,7 +4,8 @@ import { Interface } from './interface';
 import { TIMER_TICK_INTERVAL_MSEC, TIMER_TICK_INTERVAL_SEC } from './config';
 
 type TimerModelPrivateFields =
-  | '_timeLeft'
+  | '_timeIntervalID'
+  | '_secondsLeft'
   | '_onTick'
   | '_setTimeIntervalID'
   | '_clearTimeIntervalID';
@@ -15,7 +16,7 @@ export abstract class BaseTimerModel implements Interface {
   /**
    * Осталось секунд до конца таймера
    */
-  protected _timeLeft = Number.MAX_SAFE_INTEGER;
+  protected _secondsLeft = Number.MAX_SAFE_INTEGER;
 
   protected _onTimerUp: VoidFunction | null = null;
 
@@ -23,9 +24,10 @@ export abstract class BaseTimerModel implements Interface {
     this._onTimerUp = onTimerUp;
 
     makeObservable<this, TimerModelPrivateFields>(this, {
-      _timeLeft: observable,
+      _timeIntervalID: observable,
+      _secondsLeft: observable,
 
-      timeLeft: computed,
+      secondsLeft: computed,
       isFinished: computed,
       isRunning: computed,
       isPaused: computed,
@@ -43,12 +45,12 @@ export abstract class BaseTimerModel implements Interface {
   /**
    * Осталось секунд до конца таймера
    */
-  get timeLeft(): number {
-    return this._timeLeft;
+  get secondsLeft(): number {
+    return this._secondsLeft;
   }
 
   get isFinished(): boolean {
-    return this._timeLeft <= 0;
+    return this._secondsLeft <= 0;
   }
 
   get isRunning(): boolean {
@@ -66,9 +68,9 @@ export abstract class BaseTimerModel implements Interface {
   };
 
   protected _onTick = (): void => {
-    if (this._timeLeft > 0) {
-      this._timeLeft -= TIMER_TICK_INTERVAL_SEC;
-    } else {
+    this._secondsLeft -= TIMER_TICK_INTERVAL_SEC;
+
+    if (this._secondsLeft <= 0) {
       this.stop();
       this._onTimerUp?.();
     }
@@ -77,16 +79,16 @@ export abstract class BaseTimerModel implements Interface {
   start(): void {
     this._clearTimeIntervalID();
 
-    this._timeLeft = this._initTimeLeft();
+    this._secondsLeft = this._initTimeLeft();
 
-    if (this._timeLeft > TIMER_TICK_INTERVAL_SEC) {
+    if (this._secondsLeft >= TIMER_TICK_INTERVAL_SEC) {
       this._setTimeIntervalID();
     }
   }
 
   stop(): void {
     this._clearTimeIntervalID();
-    this._timeLeft = 0;
+    this._secondsLeft = 0;
   }
 
   pause(): void {

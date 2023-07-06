@@ -8,7 +8,7 @@ export type FixedTimerParams = {
   immediateStart?: boolean;
 };
 
-export default class FixedTimerModel extends BaseTimerModel {
+export class FixedTimerModel extends BaseTimerModel {
   /**
    * Хранит дату до которой таймер будет вести отсчет времени
    */
@@ -22,7 +22,7 @@ export default class FixedTimerModel extends BaseTimerModel {
     super(onTimerUp);
 
     this._fixedDate = date;
-    this._timeLeft = this._initTimeLeft();
+    this._secondsLeft = this._initTimeLeft();
 
     if (immediateStart) {
       this.start();
@@ -33,7 +33,9 @@ export default class FixedTimerModel extends BaseTimerModel {
    * Получает разницу между датой таймера и текущей датой в секундах
    */
   protected override _initTimeLeft(): number {
-    return Math.max(0, this._fixedDate.diff(dayjs(), 'seconds'));
+    const diff = Math.ceil(this._fixedDate.diff(dayjs(), 'seconds', true));
+
+    return Math.max(0, diff);
   }
 
   override continue(): void {
