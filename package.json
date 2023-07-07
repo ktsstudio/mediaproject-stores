@@ -27,10 +27,10 @@
     ]
   },
   "devDependencies": {
-    "@ktsstudio/mediaproject-utils": "^4.0.0",
-    "@sentry/react": "^6.15.0",
+    "@ktsstudio/mediaproject-utils": "^4.1.1",
+    "@sentry/react": "^6.19.7",
     "@types/node": "^16.4.5",
-    "@types/react": "~17.0.0",
+    "@types/react": ">=17",
     "@typescript-eslint/eslint-plugin": "^5.15.0",
     "@typescript-eslint/parser": "^5.15.0",
     "axios": "^0.24.0",
@@ -44,15 +44,15 @@
     "lint-staged": "^11.0.0",
     "mobx": "^6.3.10",
     "prettier": "^2.2.1",
-    "react": ">=17.0.0",
+    "react": ">=17",
     "typescript": "^4.1.3"
   },
   "peerDependencies": {
-    "@ktsstudio/mediaproject-utils": "^4.0.0",
+    "@ktsstudio/mediaproject-utils": "^4.1.1",
     "@sentry/react": "^6.19.7",
     "axios": "^0.24.0",
     "mobx": "^6.3.10",
-    "react": ">=17.0.0"
+    "react": ">=17"
   },
   "repository": {
     "type": "git",
