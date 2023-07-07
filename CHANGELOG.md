@@ -1,9 +1,8 @@
-## v2.1.1
+## v2.2.0
 
 - [+] PollingModel
 - [+] BlurAndFocusHandlerModel
-- [+] TimerModel
-- [+] FixedTimerModel
+- [+] timer models: BaseTimerModel, TimerModel, FixedTimerModel
 
 ## v2.1.0
 
