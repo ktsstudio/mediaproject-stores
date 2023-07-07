@@ -18,7 +18,7 @@ export class TimerModel extends BaseTimerModel {
   }
 
   protected _setTime(time: number): void {
-    this._time = time < 0 ? 0 : Math.ceil(time);
+    this._time = Math.max(0, Math.ceil(time));
   }
 
   override restart(time = this._time): void {

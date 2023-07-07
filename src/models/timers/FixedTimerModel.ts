@@ -33,9 +33,7 @@ export class FixedTimerModel extends BaseTimerModel {
    * Получает разницу между датой таймера и текущей датой в секундах
    */
   protected override _initTimeLeft(): number {
-    const diff = Math.ceil(this._fixedDate.diff(dayjs(), 'seconds', true));
-
-    return Math.max(0, diff);
+    return Math.max(0, this._fixedDate.diff(dayjs(), 'seconds', true));
   }
 
   override continue(): void {

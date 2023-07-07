@@ -14,7 +14,7 @@ export abstract class BaseTimerModel implements ITimerModel {
   protected _timeIntervalID: NodeJS.Timeout | null = null;
 
   /**
-   * Осталось секунд до конца таймера
+   * Осталось секунд до конца таймера (может быть дробное)
    */
   protected _secondsLeft = Number.MAX_SAFE_INTEGER;
 
@@ -43,10 +43,10 @@ export abstract class BaseTimerModel implements ITimerModel {
   }
 
   /**
-   * Осталось секунд до конца таймера
+   * Осталось секунд до конца таймера (целое число)
    */
   get secondsLeft(): number {
-    return this._secondsLeft;
+    return Math.ceil(this._secondsLeft);
   }
 
   get isFinished(): boolean {
@@ -70,7 +70,7 @@ export abstract class BaseTimerModel implements ITimerModel {
   protected _onTick = (): void => {
     this._secondsLeft -= TIMER_TICK_INTERVAL_SEC;
 
-    if (this._secondsLeft <= 0) {
+    if (this.isFinished) {
       this.stop();
       this._onTimerUp?.();
     }
@@ -81,9 +81,13 @@ export abstract class BaseTimerModel implements ITimerModel {
 
     this._secondsLeft = this._initTimeLeft();
 
-    if (this._secondsLeft >= TIMER_TICK_INTERVAL_SEC) {
-      this._setTimeIntervalID();
+    if (this.isFinished) {
+      this._onTimerUp?.();
+
+      return;
     }
+
+    this._setTimeIntervalID();
   }
 
   stop(): void {
