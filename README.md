@@ -10,11 +10,50 @@
 
 `yarn add @ktsstudio/mediaproject-stores`
 
+## Модели
+
+### SubStoreModel
+
+Модель базового стора. Такой стор должен находиться внутри RootStore. Принимает в конструкторе ссылку на RootStore, хранит ее в поле `rootStore` для обращения к полям главного стора (например, для чтения из него эндпоинтов API через `this.rootStore.endpoints`). Пример использования приведен ниже.
+
+```typescript
+import { SubStoreModel } from '@ktsstudio/mediaproject-stores';
+import { action, makeObservable, observable } from 'mobx';
+
+import RootStore from './RootStore';
+
+export default class MySubStore extends SubStoreModel<RootStore> {
+  data: DataType | null = null;
+
+  constructor(rootStore: RootStore) {
+    super(rootStore);
+
+    makeObservable(this, {
+      data: observable,
+    });
+  }
+}
+```
+
+### MetaModel
+
+Модель для контроля состояния загрузки.
+
+### ApiListModel
+
+Модель предназначена для работы со списками, которые загружаются с сервера.
+Предоставляет методы для загрузки данных с сервера с оффсетом или пагинацией, контроля состояния загрузки, сброса данных.
+При достижении конца списка, модель устанавливает флаг, что список загружен.
+
+### MockApiListModel
+
+Модель расширяет ApiListModel, добавляя возможность работы с мокапами.
+
 ## Сторы
 
 ### RootStore
 
-От [этого стора](./src/stores/RootStore.ts) должен быть отнаследован RootStore вашего приложения. В конструкторе нужно передать в параметрах объект эндпоинтов API (тип `EndpointsType` с обязательным эндпоинтом для авторизации в поле `auth`). Это необходимо для того, чтоб все подсторы могли иметь доступ к одному и тому же объекту доступных эндпоинтов API через поле \_endpoints в RootStore. Пример использования приведен ниже.
+От этого стора должен быть отнаследован RootStore вашего приложения. В конструкторе нужно передать в параметрах объект эндпоинтов API (тип `EndpointsType` с обязательным эндпоинтом для авторизации в поле `auth`). Это необходимо для того, чтоб все подсторы могли иметь доступ к одному и тому же объекту доступных эндпоинтов API через поле \_endpoints в RootStore. Пример использования приведен ниже.
 
 ```typescript
 import {
@@ -40,32 +79,9 @@ const rootStore = new RootStore(ENDPOINTS);
 console.log(rootStore.endpoints); // { auth: { url: 'https//backend/api/auth', method: 'GET' } }
 ```
 
-### SubStoreModel
-
-Модель [базового стора](./src/models/SubStoreModel.ts). Такой стор должен находиться внутри RootStore. Принимает в конструкторе ссылку на RootStore, хранит ее в поле `rootStore` для обращения к полям главного стора (например, для чтения из него эндпоинтов API через `this.rootStore.endpoints`). ошибки). Пример использования приведен ниже.
-
-```typescript
-import { SubStoreModel } from '@ktsstudio/mediaproject-stores';
-import { action, makeObservable, observable } from 'mobx';
-
-import RootStore from './RootStore';
-
-export default class MySubStore extends SubStoreModel<RootStore> {
-  data: DataType | null = null;
-
-  constructor(rootStore: RootStore) {
-    super(rootStore);
-
-    makeObservable(this, {
-      data: observable,
-    });
-  }
-}
-```
-
 ### UserStore
 
-[Стор](./src/stores/UserStore.ts) для работы с данными юзера. Должен находиться внутри RootStore, так как наследуется от SubStoreModel.
+Стор для работы с данными юзера. Должен находиться внутри RootStore, так как наследуется от SubStoreModel.
 Принимает в конструкторе ссылку на него. UserStore в вашем приложении должен быть отнаследован от этого стора. Пример использования приведен ниже.
 
 ```typescript
