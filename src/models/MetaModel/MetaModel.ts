@@ -1,8 +1,10 @@
 import { action, computed, makeObservable, observable } from 'mobx';
 
+import { IMetaModel } from './types';
+
 type MetaModelPrivateFields = '_isLoading' | '_isError' | '_isLoaded';
 
-class MetaModel {
+class MetaModel implements IMetaModel {
   private _isLoading: boolean;
   private _isError: boolean;
   private _isLoaded: boolean;

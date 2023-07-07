@@ -1,3 +1,7 @@
+## v2.2.0
+
+- [+] модели для работы со списками: ApiListModel и MockApiListModel
+
 ## v2.1.0
 
 - [*] Sentry version

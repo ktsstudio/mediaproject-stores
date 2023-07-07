@@ -1,0 +1,1 @@
+export const LIMIT_PER_REQUEST_DEFAULT = 10;
