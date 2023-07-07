@@ -1,7 +1,6 @@
 ## v2.2.0
 
-- [+] ApiListModel
-- [+] MockApiListModel
+- [+] модели для работы со списками: ApiListModel и MockApiListModel
 
 ## v2.1.0
 
