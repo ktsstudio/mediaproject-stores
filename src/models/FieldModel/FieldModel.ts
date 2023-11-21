@@ -2,7 +2,7 @@ import { action, computed, makeObservable, observable } from 'mobx';
 
 import { IField } from './types';
 
-export default class FieldModel<T = string> implements IField<T> {
+class FieldModel<T = string> implements IField<T> {
   private _value: T;
   private _initialValue: T;
 
@@ -32,3 +32,5 @@ export default class FieldModel<T = string> implements IField<T> {
     this._value = this._initialValue;
   }
 }
+
+export default FieldModel;
