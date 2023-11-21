@@ -8,16 +8,14 @@ export interface IList<T, K extends string | number | symbol = string> {
   getEntityByIndex(index: number): T;
   getEntityAndIndex(key: K): { item: T; index: number } | null;
 
-  addEntity(params: { entity: T; key: K; isToStart?: boolean }): void;
+  addEntity(params: { entity: T; isToStart?: boolean }): void;
   addEntities({
     entities,
-    keys,
     isInitial,
     isToStart,
   }: {
-    entities: Record<K, T>;
-    keys: K[];
-    isInitial: boolean;
+    entities: T[];
+    isInitial?: boolean;
     isToStart?: boolean;
   }): void;
 

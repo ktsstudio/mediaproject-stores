@@ -5,7 +5,7 @@ import { IList } from './types';
 type ListModelPrivateFields = '_keys' | '_entities';
 
 /**
- * ListModel<T, C extends string | number = string>
+ * Модель для работы со списками однотипных данных
  *
  * @implements {IList<T, K>}
  * T - тип данных элемента исходного списка.
@@ -17,8 +17,11 @@ type ListModelPrivateFields = '_keys' | '_entities';
 class ListModel<T, K extends string | number = string> implements IList<T, K> {
   private _keys: K[] = [];
   private _entities: Record<K, T> = {} as Record<K, T>;
+  private _getKeyForItem: (item: T) => K;
 
   constructor(items: T[], getKeyForItem: (item: T) => K) {
+    this._getKeyForItem = getKeyForItem;
+
     this._normalize(items, getKeyForItem);
 
     makeObservable<ListModel<T, K>, ListModelPrivateFields>(this, {
@@ -104,19 +107,24 @@ class ListModel<T, K extends string | number = string> implements IList<T, K> {
   };
 
   /**
-   * Добавляет новую запись
+   * Добавляет новую запись.
+   * Если идентификатор новой записи уже существует, то запись с этим ключом перезаписывается.
    * @param {boolean} isToStart Помещать новую запись в начало списка?
    */
   addEntity = ({
     entity,
-    key,
-    isToStart = false,
+    isToStart,
   }: {
     entity: T;
-    key: K;
     isToStart?: boolean;
   }): void => {
+    const key = this._getKeyForItem(entity);
+
     this._entities[key] = entity;
+
+    if (this._keys.includes(key)) {
+      return;
+    }
 
     if (isToStart) {
       this._keys.unshift(key);
@@ -133,26 +141,27 @@ class ListModel<T, K extends string | number = string> implements IList<T, K> {
    */
   addEntities = ({
     entities,
-    keys,
     isInitial,
     isToStart,
   }: {
-    entities: Record<K, T>;
-    keys: K[];
-    isInitial: boolean;
+    entities: T[];
+    isInitial?: boolean;
     isToStart?: boolean;
   }): void => {
     if (isInitial) {
-      this._entities = entities;
-      this._keys = keys;
+      this.reset();
+      this._normalize(entities, this._getKeyForItem);
 
       return;
     }
 
-    this._entities = {
-      ...this._entities,
-      ...entities,
-    };
+    entities.forEach((entity) => {
+      const key = this._getKeyForItem(entity);
+
+      this._entities[key] = entity;
+    });
+
+    const keys = entities.map(this._getKeyForItem);
 
     if (isToStart) {
       this._keys.unshift(...keys);
