@@ -73,6 +73,10 @@ export default class MySubStore extends SubStoreModel<RootStore> {
 
 Модель для изменяемых полей классов.
 
+### ListModel
+
+Модель для работы со списками однотипных данных.
+
 ## Сторы
 
 ### RootStore

@@ -1,6 +1,7 @@
 ## v2.2.0
 
-- [+] модели для работы со списками: ApiListModel и MockApiListModel
+- [+] модели для работы со списками: ListModel, ApiListModel и MockApiListModel
+- [+] FieldModel
 - [+] PollingModel
 - [+] BlurAndFocusHandlerModel
 - [+] модели для таймеров: BaseTimerModel, TimerModel, FixedTimerModel
