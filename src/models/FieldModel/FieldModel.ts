@@ -4,11 +4,11 @@ import { IField } from './types';
 
 class FieldModel<T = string> implements IField<T> {
   private _value: T;
-  private _initialValue: T;
+  private readonly _initialValue: T;
 
-  constructor(value: T) {
+  constructor(value: T, config?: { initialValue: T }) {
     this._value = value;
-    this._initialValue = value;
+    this._initialValue = config?.initialValue ?? value;
 
     makeObservable<FieldModel<T>, '_value'>(this, {
       _value: observable.ref,
@@ -24,8 +24,10 @@ class FieldModel<T = string> implements IField<T> {
     return this._value;
   }
 
-  changeValue(value: T): void {
+  changeValue<I extends T>(value: I): I {
     this._value = value;
+
+    return value;
   }
 
   reset(): void {

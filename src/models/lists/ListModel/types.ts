@@ -1,11 +1,11 @@
-export interface IList<T, K extends string | number | symbol = string> {
+export interface IList<T, K extends string | number = string> {
   get keys(): K[];
   get entities(): Record<K, T>;
   get items(): Array<T>;
   get length(): number;
 
   getEntityByKey(key: K): T | null;
-  getEntityByIndex(index: number): T;
+  getEntityByIndex(index: number): T | null;
   getEntityAndIndex(key: K): { item: T; index: number } | null;
 
   addEntity(params: { entity: T; isToStart?: boolean }): void;

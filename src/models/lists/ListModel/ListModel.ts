@@ -17,12 +17,12 @@ type ListModelPrivateFields = '_keys' | '_entities';
 class ListModel<T, K extends string | number = string> implements IList<T, K> {
   private _keys: K[] = [];
   private _entities: Record<K, T> = {} as Record<K, T>;
-  private _getKeyForItem: (item: T) => K;
+  private readonly _getKeyForItem: (item: T) => K;
 
   constructor(items: T[], getKeyForItem: (item: T) => K) {
     this._getKeyForItem = getKeyForItem;
 
-    this._normalize(items, getKeyForItem);
+    this._normalize(items);
 
     makeObservable<ListModel<T, K>, ListModelPrivateFields>(this, {
       _keys: observable,
@@ -33,18 +33,18 @@ class ListModel<T, K extends string | number = string> implements IList<T, K> {
       length: computed,
       items: computed,
 
-      addEntity: action,
-      addEntities: action,
-      removeEntity: action,
-      removeEntities: action,
-      toStart: action,
-      reset: action,
+      addEntity: action.bound,
+      addEntities: action.bound,
+      removeEntity: action.bound,
+      removeEntities: action.bound,
+      toStart: action.bound,
+      reset: action.bound,
     });
   }
 
-  private _normalize(items: T[], getKeyForItem: (item: T) => K) {
+  private _normalize(items: T[]) {
     items.forEach((item) => {
-      const key = getKeyForItem(item);
+      const key = this._getKeyForItem(item);
 
       this._keys.push(key);
       this._entities[key] = item;
@@ -78,23 +78,30 @@ class ListModel<T, K extends string | number = string> implements IList<T, K> {
     return this.items.length;
   }
 
-  /** Получает элемент типа T по его идентификатору (ключу) типа K */
-  getEntityByKey = (key: K): T => {
+  /**
+   * Получает элемент типа T по его идентификатору (ключу) типа K.
+   * Если элемент не найден, возвращает null.
+   */
+  getEntityByKey(key: K): T | null {
+    if (!this._entities[key]) {
+      return null;
+    }
+
     return this._entities[key];
-  };
+  }
 
   /** Получает элемент типа T по его индексу */
-  getEntityByIndex = (index: number): T => {
+  getEntityByIndex(index: number): T | null {
     const id = this.keys[index];
 
     return this.getEntityByKey(id);
-  };
+  }
 
   /**
    * По ключу типа K получает объект, содержащий элемент типа T и его индекс.
    * Если такого ключа нет, возвращает null.
    */
-  getEntityAndIndex = (key: K): { item: T; index: number } | null => {
+  getEntityAndIndex(key: K): { item: T; index: number } | null {
     const index = this.keys.indexOf(key);
 
     if (index === -1) {
@@ -104,20 +111,14 @@ class ListModel<T, K extends string | number = string> implements IList<T, K> {
     const item = this.items[index];
 
     return item ? { item, index } : null;
-  };
+  }
 
   /**
    * Добавляет новую запись.
    * Если идентификатор новой записи уже существует, то запись с этим ключом перезаписывается.
    * @param {boolean} isToStart Помещать новую запись в начало списка?
    */
-  addEntity = ({
-    entity,
-    isToStart,
-  }: {
-    entity: T;
-    isToStart?: boolean;
-  }): void => {
+  addEntity({ entity, isToStart }: { entity: T; isToStart?: boolean }): void {
     const key = this._getKeyForItem(entity);
 
     this._entities[key] = entity;
@@ -131,7 +132,7 @@ class ListModel<T, K extends string | number = string> implements IList<T, K> {
     } else {
       this._keys.push(key);
     }
-  };
+  }
 
   /**
    * Добавляет несколько новых записей
@@ -139,7 +140,7 @@ class ListModel<T, K extends string | number = string> implements IList<T, K> {
    * @param {boolean} param.isInitial Затереть текущие записи новыми?
    * @param {boolean} param.isToStart Поместить новые записи в начало?
    */
-  addEntities = ({
+  addEntities({
     entities,
     isInitial,
     isToStart,
@@ -147,42 +148,34 @@ class ListModel<T, K extends string | number = string> implements IList<T, K> {
     entities: T[];
     isInitial?: boolean;
     isToStart?: boolean;
-  }): void => {
+  }): void {
     if (isInitial) {
       this.reset();
-      this._normalize(entities, this._getKeyForItem);
+      this._normalize(entities);
 
       return;
     }
 
-    entities.forEach((entity) => {
-      const key = this._getKeyForItem(entity);
+    const newEntities = isToStart ? entities.reverse() : entities;
 
-      this._entities[key] = entity;
+    newEntities.forEach((entity) => {
+      this.addEntity({ entity, isToStart });
     });
-
-    const keys = entities.map(this._getKeyForItem);
-
-    if (isToStart) {
-      this._keys.unshift(...keys);
-    } else {
-      this._keys.push(...keys);
-    }
-  };
+  }
 
   /** Удаляет запись с ключом keyParam */
-  removeEntity = (keyParam: K): void => {
+  removeEntity(keyParam: K): void {
     this._keys = this._keys.filter((key) => key !== keyParam);
     delete this._entities[keyParam];
-  };
+  }
 
   /** Удаляет несколько записей, которые имеют ключи keys */
-  removeEntities = (keys: K[]): void => {
+  removeEntities(keys: K[]): void {
     keys.forEach(this.removeEntity);
-  };
+  }
 
   /** Перемещает запись с ключом key в начало списка */
-  toStart = (key: K): void => {
+  toStart(key: K): void {
     const foundIndex = this.keys.indexOf(key);
 
     if (foundIndex === -1) {
@@ -191,13 +184,13 @@ class ListModel<T, K extends string | number = string> implements IList<T, K> {
 
     this.keys.splice(foundIndex, 1);
     this.keys.splice(0, 0, key);
-  };
+  }
 
   /** Очищает модель */
-  reset = (): void => {
+  reset(): void {
     this._keys = [];
     this._entities = {} as Record<K, T>;
-  };
+  }
 }
 
 export default ListModel;
