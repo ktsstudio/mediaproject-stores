@@ -2,6 +2,7 @@
 
 - [+] ListModel
 - [+] FieldModel
+- [+] В конструктор PollingModel добавлен необязательный параметр isImmediate
 
 ## v2.2.0
 

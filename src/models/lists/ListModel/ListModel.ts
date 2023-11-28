@@ -90,7 +90,10 @@ class ListModel<T, K extends string | number = string> implements IList<T, K> {
     return this._entities[key];
   }
 
-  /** Получает элемент типа T по его индексу */
+  /**
+   * Получает элемент типа T по его индексу.
+   * Если элемент не найден, возвращает null.
+   */
   getEntityByIndex(index: number): T | null {
     const id = this.keys[index];
 
