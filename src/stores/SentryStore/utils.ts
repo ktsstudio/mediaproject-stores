@@ -2,6 +2,8 @@ import * as Sentry from '@sentry/react';
 import { User } from '@sentry/types';
 import { BrowserOptions } from '@sentry/browser/dist/backend';
 
+import { appParamsStore } from '../AppParamsStore';
+
 import {
   APIErrorDataType,
   APIExceptionType,
@@ -30,9 +32,13 @@ const init = (
     // Дев или прод окружение
     environment:
       environment ||
-      (window.is_production ? (window.is_dev ? 'dev' : 'prod') : undefined),
+      (appParamsStore.isProd
+        ? appParamsStore.isDev
+          ? 'dev'
+          : 'prod'
+        : undefined),
     // Для локальной разработки Sentry отключен
-    enabled: window.is_production,
+    enabled: appParamsStore.isProd,
     ...contextOptions,
   });
 

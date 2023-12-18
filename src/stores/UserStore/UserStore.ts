@@ -4,6 +4,7 @@ import { api, ApiResponse } from '@ktsstudio/mediaproject-utils';
 import { RootStore } from '../RootStore';
 import { MetaModel, SubStoreModel } from '../../models';
 import { addParamsToEndpointUrl, logError } from '../../utils';
+import { appParamsStore } from '../AppParamsStore';
 
 import {
   ApiAuthType,
@@ -88,7 +89,9 @@ class UserStore<
     }
   }
 
-  async auth(authParams = window.search): Promise<ApiResponse<AuthT | null>> {
+  async auth(
+    authParams = appParamsStore.search
+  ): Promise<ApiResponse<AuthT | null>> {
     if (!this.rootStore.endpoints.auth) {
       logError('Missing endpoint for auth method in BaseUserStore');
       return { response: null };
