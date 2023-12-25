@@ -8,7 +8,8 @@ class FieldModel<T = string> implements IField<T> {
 
   constructor(value: T, config?: { initialValue: T }) {
     this._value = value;
-    this._initialValue = config?.initialValue ?? value;
+    this._initialValue =
+      config?.initialValue === undefined ? value : config.initialValue;
 
     makeObservable<FieldModel<T>, '_value'>(this, {
       _value: observable.ref,
