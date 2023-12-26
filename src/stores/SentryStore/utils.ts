@@ -2,8 +2,6 @@ import * as Sentry from '@sentry/react';
 import { User } from '@sentry/types';
 import { BrowserOptions } from '@sentry/browser/dist/backend';
 
-import { appParamsStore } from '../AppParamsStore';
-
 import {
   APIErrorDataType,
   APIExceptionType,
@@ -22,6 +20,8 @@ const init = (
     environment = undefined,
     ...contextOptions
   }: BrowserOptions,
+  isProd: boolean,
+  isDev: boolean,
   user?: User
 ) => {
   Sentry.init({
@@ -30,15 +30,9 @@ const init = (
     // передаваемых в extra при отправке событий
     normalizeDepth,
     // Дев или прод окружение
-    environment:
-      environment ||
-      (appParamsStore.isProd
-        ? appParamsStore.isDev
-          ? 'dev'
-          : 'prod'
-        : undefined),
+    environment: environment || (isProd ? (isDev ? 'dev' : 'prod') : undefined),
     // Для локальной разработки Sentry отключен
-    enabled: appParamsStore.isProd,
+    enabled: isProd,
     ...contextOptions,
   });
 

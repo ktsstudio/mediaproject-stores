@@ -11,7 +11,7 @@ export class AppParamsStore {
     this.search = location.search;
     this.locationHash = location.hash;
     this.isProd = process.env.NODE_ENV === 'production';
-    this.isDev = checkDev(this.isProd); // @ktsstudio/mediaproject-utils >= 5.0.0
+    this.isDev = checkDev(this.isProd);
 
     makeObservable<AppParamsStore>(this, {
       search: observable,
@@ -21,5 +21,3 @@ export class AppParamsStore {
     });
   }
 }
-
-export const appParamsStore = new AppParamsStore();

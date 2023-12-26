@@ -1,7 +1,5 @@
-import { appParamsStore } from '../stores';
-
-const logError = (error: string): void => {
-  if (appParamsStore.isDev) {
+const logError = (error: string, isDev: boolean): void => {
+  if (isDev) {
     // eslint-disable-next-line
     console.error(`[@ktsstudio/mediaproject-stores] ${error}`);
   }
