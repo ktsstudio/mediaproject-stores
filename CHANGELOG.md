@@ -1,3 +1,9 @@
+## v2.3.0
+
+- [+] ListModel
+- [+] FieldModel
+- [+] В конструктор PollingModel добавлен необязательный параметр isImmediate
+
 ## v2.2.0
 
 - [+] модели для работы со списками: ApiListModel и MockApiListModel

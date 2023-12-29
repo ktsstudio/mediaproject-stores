@@ -9,3 +9,5 @@ export * from './timers';
 export * from './BlurAndFocusHandlerModel';
 
 export * from './PollingModel';
+
+export * from './FieldModel';

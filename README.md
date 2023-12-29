@@ -69,6 +69,14 @@ export default class MySubStore extends SubStoreModel<RootStore> {
 
 Модель таймера, который отсчитывает время до заданной даты в секундах и по окончании вызывает callback-функцию.
 
+### FieldModel
+
+Модель для изменяемых полей классов.
+
+### ListModel
+
+Модель для работы со списками однотипных данных.
+
 ## Сторы
 
 ### RootStore
