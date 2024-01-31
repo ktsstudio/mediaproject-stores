@@ -1,5 +1,5 @@
-const logError = (error: string): void => {
-  if (window.is_dev) {
+const logError = (error: string, isDev: boolean): void => {
+  if (isDev) {
     // eslint-disable-next-line
     console.error(`[@ktsstudio/mediaproject-stores] ${error}`);
   }

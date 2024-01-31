@@ -20,8 +20,13 @@ import {
 } from './types';
 
 class SentryStore {
-  init(options: BrowserOptions, user?: User): void {
-    init(options, user);
+  init(
+    options: BrowserOptions,
+    isProd: boolean,
+    isDev: boolean,
+    user?: User
+  ): void {
+    init(options, isProd, isDev, user);
   }
 
   setUser(user: User): void {

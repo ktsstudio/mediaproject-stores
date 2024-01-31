@@ -20,6 +20,8 @@ const init = (
     environment = undefined,
     ...contextOptions
   }: BrowserOptions,
+  isProd: boolean,
+  isDev: boolean,
   user?: User
 ) => {
   Sentry.init({
@@ -28,11 +30,9 @@ const init = (
     // передаваемых в extra при отправке событий
     normalizeDepth,
     // Дев или прод окружение
-    environment:
-      environment ||
-      (window.is_production ? (window.is_dev ? 'dev' : 'prod') : undefined),
+    environment: environment || (isProd ? (isDev ? 'dev' : 'prod') : undefined),
     // Для локальной разработки Sentry отключен
-    enabled: window.is_production,
+    enabled: isProd,
     ...contextOptions,
   });
 
