@@ -165,3 +165,7 @@ const MyComponent = () => {
 
 export default observer(MyComponent);
 ```
+
+### AppParamsStore
+
+Стор для хранения параметров приложения, которые вычисляются на запуске.
