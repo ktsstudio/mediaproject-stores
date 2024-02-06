@@ -19,6 +19,8 @@ class UserStore<
   UserT extends ApiUserType = ApiUserType,
   AuthT extends ApiAuthType = ApiAuthType<UserT>
 > extends SubStoreModel<RootStoreT> {
+  private readonly _isDev: boolean;
+
   private _user: null | UserT = null;
   private _flags: FlagsType = {};
   private _messagesAllowed = false;
@@ -27,8 +29,10 @@ class UserStore<
   getMeta = new MetaModel();
   flagMeta = new MetaModel();
 
-  constructor(rootStore: RootStoreT) {
+  constructor(rootStore: RootStoreT, isDev: boolean) {
     super(rootStore);
+
+    this._isDev = isDev;
 
     makeObservable<UserStore, UserStorePrivateFields>(this, {
       _user: observable,
@@ -88,9 +92,14 @@ class UserStore<
     }
   }
 
-  async auth(authParams = window.search): Promise<ApiResponse<AuthT | null>> {
+  async auth(
+    authParams: string | Record<string, string>
+  ): Promise<ApiResponse<AuthT | null>> {
     if (!this.rootStore.endpoints.auth) {
-      logError('Missing endpoint for auth method in BaseUserStore');
+      logError(
+        'Missing endpoint for auth method in BaseUserStore',
+        this._isDev
+      );
       return { response: null };
     }
 
@@ -118,7 +127,10 @@ class UserStore<
 
   async get(): Promise<ApiResponse<ApiGetUserType<UserT> | null>> {
     if (!this.rootStore.endpoints.getUser) {
-      logError('Missing endpoint for get user method in BaseUserStore');
+      logError(
+        'Missing endpoint for get user method in BaseUserStore',
+        this._isDev
+      );
       return { response: null };
     }
 
@@ -149,7 +161,10 @@ class UserStore<
     withLoadingCheck = true,
   }: FlagParamsType): Promise<ApiResponse<boolean | null>> {
     if (!this.rootStore.endpoints.flag) {
-      logError('Missing endpoint for send user flag method in BaseUserStore');
+      logError(
+        'Missing endpoint for send user flag method in BaseUserStore',
+        this._isDev
+      );
       return { response: null };
     }
 
