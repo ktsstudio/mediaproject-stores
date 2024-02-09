@@ -1,3 +1,7 @@
+# v4.0.0
+
+- [*] AppParamsStore: в конструктор добавлен аргумент `apiUrl`
+
 # v3.0.0
 
 - [+] ListModel

@@ -7,11 +7,11 @@ export class AppParamsStore {
   isProd: boolean;
   isDev: boolean;
 
-  constructor() {
+  constructor(apUrl: string) {
     this.search = location.search;
     this.locationHash = location.hash;
     this.isProd = process.env.NODE_ENV === 'production';
-    this.isDev = checkDev(this.isProd);
+    this.isDev = checkDev(this.isProd, apUrl);
 
     makeObservable<AppParamsStore>(this, {
       search: observable,
