@@ -1,6 +1,7 @@
 # v4.0.0
 
 - [*] AppParamsStore: в конструктор добавлен аргумент `apiUrl`
+- [*] Поднята версия @ktsstudio/mediaproject-utils до 6.0.0
 
 # v3.0.0
 
