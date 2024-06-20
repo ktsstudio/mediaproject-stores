@@ -1,6 +1,6 @@
-export interface IField<T = string> {
-  get value(): T;
+export type ValidatorType<T> = (value: T) => string | null;
 
-  changeValue(value: T): void;
-  reset(): void;
-}
+export type FormFieldInitDataType<T> = {
+  value: T;
+  validators: ValidatorType<T>[];
+};

@@ -1,23 +1,32 @@
 import { action, computed, makeObservable, observable } from 'mobx';
 
-import { IField } from './types';
+import { FormFieldInitDataType, ValidatorType } from './types';
 
-class FieldModel<T = string> implements IField<T> {
+type PrivateFields = '_value' | '_error' | '_setError' | '_resetError';
+
+export default class FormFieldModel<T = string> {
+  private readonly _validators: ValidatorType<T>[];
+
   private _value: T;
-  private readonly _initialValue: T;
 
-  constructor(value: T, config?: { initialValue: T }) {
-    this._value = value;
-    this._initialValue =
-      config?.initialValue === undefined ? value : config.initialValue;
+  private _error: string | null = null;
 
-    makeObservable<FieldModel<T>, '_value'>(this, {
-      _value: observable.ref,
+  constructor(initData: FormFieldInitDataType<T>) {
+    this._value = initData.value;
+    this._validators = initData.validators;
+
+    makeObservable<FormFieldModel<T>, PrivateFields>(this, {
+      _value: observable,
+      _error: observable,
 
       value: computed,
+      error: computed,
+      hasError: computed,
+      isEmpty: computed,
 
-      changeValue: action.bound,
-      reset: action.bound,
+      setValue: action.bound,
+      _setError: action.bound,
+      _resetError: action.bound,
     });
   }
 
@@ -25,15 +34,40 @@ class FieldModel<T = string> implements IField<T> {
     return this._value;
   }
 
-  changeValue<I extends T>(value: I): I {
-    this._value = value;
-
-    return value;
+  get error(): string | null {
+    return this._error;
   }
 
-  reset(): void {
-    this._value = this._initialValue;
+  get hasError(): boolean {
+    return this._error !== null;
+  }
+
+  get isEmpty(): boolean {
+    return !this._value;
+  }
+
+  setValue(value: T): void {
+    this._value = value;
+    this._resetError();
+  }
+
+  private _setError(value: string): void {
+    this._error = value;
+  }
+
+  private _resetError(): void {
+    this._error = null;
+  }
+
+  validate(): void {
+    this._validators.some((validator) => {
+      const error = validator(this.value);
+
+      if (error) {
+        this._setError(error);
+      }
+
+      return Boolean(error);
+    });
   }
 }
-
-export default FieldModel;
