@@ -7,7 +7,7 @@ import { FormFieldInitDataType, ValidatorType } from './types';
 type ProtectedFields = '_error' | '_setError' | '_resetError';
 
 export default class FormFieldModel<T = string> extends ValueModel<T> {
-  private readonly _validators: ValidatorType<T>[];
+  protected readonly _validators: ValidatorType<T>[];
 
   protected _error: string | null = null;
 
