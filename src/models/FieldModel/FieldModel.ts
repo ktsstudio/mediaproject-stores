@@ -15,7 +15,7 @@ export default class FormFieldModel<T = string> {
 
   private _value: T;
   private _touched = false;
-  protected _initialValue: T;
+  protected readonly _initialValue: T;
 
   private _error: string | null = null;
 
@@ -77,7 +77,7 @@ export default class FormFieldModel<T = string> {
     this._error = value;
   }
 
-  _resetTouched = (): void => {
+  private _resetTouched = (): void => {
     this._touched = false;
   };
 
