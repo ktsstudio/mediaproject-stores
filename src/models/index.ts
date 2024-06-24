@@ -11,3 +11,5 @@ export * from './BlurAndFocusHandlerModel';
 export * from './PollingModel';
 
 export * from './FieldModel';
+
+export * from './ValueModel';

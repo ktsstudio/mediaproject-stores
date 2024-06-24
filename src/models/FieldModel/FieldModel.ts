@@ -1,50 +1,32 @@
 import { action, computed, makeObservable, observable } from 'mobx';
 
+import { ValueModel } from '../ValueModel';
+
 import { FormFieldInitDataType, ValidatorType } from './types';
 
-type PrivateFields =
-  | '_value'
-  | '_error'
-  | '_setError'
-  | '_resetError'
-  | '_touched'
-  | '_resetTouched';
+type ProtectedFields = '_error' | '_setError' | '_resetError';
 
-export default class FormFieldModel<T = string> {
+export default class FormFieldModel<T = string> extends ValueModel<T> {
   private readonly _validators: ValidatorType<T>[];
 
-  private _value: T;
-  private _touched = false;
-  protected readonly _initialValue: T;
-
-  private _error: string | null = null;
+  protected _error: string | null = null;
 
   constructor(initData: FormFieldInitDataType<T>) {
-    this._value = initData.value;
-    this._initialValue = initData.value;
+    super(initData.value);
+
     this._validators = initData.validators;
 
-    makeObservable<FormFieldModel<T>, PrivateFields>(this, {
-      _value: observable,
+    makeObservable<FormFieldModel<T>, ProtectedFields>(this, {
       _error: observable,
-      _touched: observable,
 
-      value: computed,
       error: computed,
       hasError: computed,
-      isEmpty: computed,
-      touched: computed,
 
       setValue: action.bound,
       reset: action.bound,
       _setError: action.bound,
       _resetError: action.bound,
-      _resetTouched: action.bound,
     });
-  }
-
-  get value(): T {
-    return this._value;
   }
 
   get error(): string | null {
@@ -53,14 +35,6 @@ export default class FormFieldModel<T = string> {
 
   get hasError(): boolean {
     return this._error !== null;
-  }
-
-  get touched(): boolean {
-    return this._touched;
-  }
-
-  get isEmpty(): boolean {
-    return !this._value;
   }
 
   setValue(value: T): void {
@@ -73,15 +47,11 @@ export default class FormFieldModel<T = string> {
     this._touched = true;
   }
 
-  private _setError(value: string): void {
+  protected _setError(value: string): void {
     this._error = value;
   }
 
-  private _resetTouched = (): void => {
-    this._touched = false;
-  };
-
-  private _resetError(): void {
+  protected _resetError(): void {
     this._error = null;
   }
 
