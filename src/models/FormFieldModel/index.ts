@@ -1,3 +1,3 @@
-export { default as FormFieldModel } from './FieldModel';
+export { default as FormFieldModel } from './FormFieldModel';
 
 export * from './types';

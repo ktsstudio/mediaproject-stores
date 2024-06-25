@@ -50,8 +50,8 @@ export default class ValueModel<T = string> {
     this._touched = false;
   };
 
-  reset = (): void => {
+  reset(): void {
     this.setValue(this._initialValue);
     this._resetTouched();
-  };
+  }
 }

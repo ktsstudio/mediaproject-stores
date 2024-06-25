@@ -22,8 +22,6 @@ export default class FormFieldModel<T = string> extends ValueModel<T> {
       error: computed,
       hasError: computed,
 
-      setValue: action.bound,
-      reset: action.bound,
       _setError: action.bound,
       _resetError: action.bound,
     });
@@ -38,13 +36,13 @@ export default class FormFieldModel<T = string> extends ValueModel<T> {
   }
 
   setValue(value: T): void {
-    if (value === this._value) {
+    super.setValue(value);
+
+    if (value === this.value) {
       return;
     }
 
-    this._value = value;
     this._resetError();
-    this._touched = true;
   }
 
   protected _setError(value: string): void {
@@ -67,9 +65,8 @@ export default class FormFieldModel<T = string> extends ValueModel<T> {
     });
   }
 
-  reset = (): void => {
-    this.setValue(this._initialValue);
-    this._resetTouched();
+  reset(): void {
+    super.reset();
     this._resetError();
-  };
+  }
 }
