@@ -1,3 +1,8 @@
+# v4.0.1
+
+- [+] Добавлена ValueModel
+- [*] FieldModel переименована в FormFieldModel и наследует ValueModel с возможностью добавления валидаторов
+
 # v4.0.0
 
 - [*] AppParamsStore: в конструктор добавлен аргумент `apiUrl`

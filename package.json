@@ -1,6 +1,6 @@
 {
   "name": "@ktsstudio/mediaproject-stores",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "author": "KTS Studio",
   "license": "MIT",
   "description": "Package with basic MobX stores for mediaprojects",
