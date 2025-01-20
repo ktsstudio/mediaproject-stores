@@ -1,5 +1,4 @@
-import { User } from '@sentry/types';
-import { BrowserOptions } from '@sentry/browser/dist/backend';
+import { BrowserOptions, User } from '@sentry/react';
 
 import {
   captureAPIException,
