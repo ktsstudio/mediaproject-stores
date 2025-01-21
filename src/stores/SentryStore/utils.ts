@@ -1,6 +1,5 @@
 import * as Sentry from '@sentry/react';
-import { User } from '@sentry/types';
-import { BrowserOptions } from '@sentry/browser/dist/backend';
+import { User, BrowserOptions } from '@sentry/react';
 
 import {
   APIErrorDataType,

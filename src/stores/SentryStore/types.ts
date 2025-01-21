@@ -1,5 +1,4 @@
-import { ScopeContext } from '@sentry/types/dist/scope';
-import { CaptureContext } from '@sentry/types';
+import { ScopeContext, CaptureContext } from '@sentry/core';
 
 type APIErrorDataType = {
   code: string;
