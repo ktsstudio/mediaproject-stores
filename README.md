@@ -1,14 +1,14 @@
 ![kts](./logo.png)
 
-# @ktsstudio/mediaproject-stores
+# @kts-specials/mediaproject-stores
 
 Пакет с базовыми MobX-сторами для медиапроектов.
 
 ## Использование
 
-`npm install @ktsstudio/mediaproject-stores`
+`npm install @kts-specials/mediaproject-stores`
 
-`yarn add @ktsstudio/mediaproject-stores`
+`yarn add @kts-specials/mediaproject-stores`
 
 ## Модели
 
@@ -17,7 +17,7 @@
 Модель базового стора. Такой стор должен находиться внутри RootStore. Принимает в конструкторе ссылку на RootStore, хранит ее в поле `rootStore` для обращения к полям главного стора (например, для чтения из него эндпоинтов API через `this.rootStore.endpoints`). Пример использования приведен ниже.
 
 ```typescript
-import { SubStoreModel } from '@ktsstudio/mediaproject-stores';
+import { SubStoreModel } from '@kts-specials/mediaproject-stores';
 import { action, makeObservable, observable } from 'mobx';
 
 import RootStore from './RootStore';
@@ -87,7 +87,7 @@ export default class MySubStore extends SubStoreModel<RootStore> {
 import {
   RootStore as BaseRootStore,
   EndpointsType,
-} from '@ktsstudio/mediaproject-stores';
+} from '@kts-specials/mediaproject-stores';
 
 const ENDPOINTS: EndpointsType = {
   auth: {
@@ -119,7 +119,7 @@ console.log(rootStore.endpoints); // { auth: { url: 'https//backend/api/auth', m
 import {
   RootStore as BaseRootStore,
   UserStore,
-} from '@ktsstudio/mediaproject-stores';
+} from '@kts-specials/mediaproject-stores';
 
 export default class RootStore extends BaseRootStore {
   // <...>
@@ -130,7 +130,7 @@ export default class RootStore extends BaseRootStore {
 ```typescript
 // store/hooks.ts
 
-import { UserStore } from '@ktsstudio/mediaproject-stores';
+import { UserStore } from '@kts-specials/mediaproject-stores';
 import { MobXProviderContext } from 'mobx-react';
 import { useContext } from 'react';
 

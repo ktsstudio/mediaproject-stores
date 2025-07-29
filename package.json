@@ -1,6 +1,6 @@
 {
-  "name": "@ktsstudio/mediaproject-stores",
-  "version": "4.1.0",
+  "name": "@kts-specials/mediaproject-stores",
+  "version": "4.2.0",
   "author": "KTS Studio",
   "license": "MIT",
   "description": "Package with basic MobX stores for mediaprojects",
@@ -61,6 +61,9 @@
   "private": false,
   "bugs": {
     "url": "https://github.com/ktsstudio/mediaproject-stores/issues"
+  },
+  "publishConfig": {
+    "registry": "https://nexus.team.ktsstudio.ru/repository/ktsnpm/"
   },
   "homepage": "https://github.com/ktsstudio/mediaproject-stores#readme",
   "files": [

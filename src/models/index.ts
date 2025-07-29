@@ -10,4 +10,6 @@ export * from './BlurAndFocusHandlerModel';
 
 export * from './PollingModel';
 
-export * from './FieldModel';
+export * from './FormFieldModel';
+
+export * from './ValueModel';
