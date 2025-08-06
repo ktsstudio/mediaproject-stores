@@ -1,5 +1,5 @@
 import { makeObservable, observable, action, computed } from 'mobx';
-import { api, ApiResponse } from '@ktsstudio/mediaproject-utils';
+import { api, ApiResponse } from '@kts-studio/mediaproject-utils';
 
 import { RootStore } from '../RootStore';
 import { MetaModel, SubStoreModel } from '../../models';

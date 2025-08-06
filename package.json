@@ -48,7 +48,7 @@
     "typescript": "^4.1.3"
   },
   "peerDependencies": {
-    "@ktsstudio/mediaproject-utils": "^6.0.0",
+    "@kts-studio/mediaproject-utils": "^6.0.1",
     "@sentry/react": "^8.9.2",
     "axios": "^0.24.0",
     "mobx": "^6.3.10",
