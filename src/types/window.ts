@@ -1,4 +1,4 @@
-import { WindowType as CommonWindowType } from '@ktsstudio/mediaproject-utils';
+import { WindowType as CommonWindowType } from '@kts-specials/mediaproject-utils';
 
 type WindowType = CommonWindowType;
 

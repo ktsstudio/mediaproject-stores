@@ -1,4 +1,4 @@
-import { checkDev } from '@ktsstudio/mediaproject-utils';
+import { checkDev } from '@kts-specials/mediaproject-utils';
 import { makeObservable, observable } from 'mobx';
 
 export class AppParamsStore {

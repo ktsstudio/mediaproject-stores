@@ -1,3 +1,8 @@
+
+# v4.2.1
+
+- [*] Заменена и повышена версия с @ktsstudio/mediaproject-utils 6.0.0 на @kts-specials/mediaproject-utils 6.0.1
+
 # v4.2.0
 
 - [*] Добавлена ссылка на публикацию в приватный реджестри
